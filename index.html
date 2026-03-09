@@ -251,6 +251,8 @@
             padding: 10px;
             text-align: center;
             border: 1px solid #ddd;
+            background: #000; /* 文字底色統一為黑色 */
+            color: #fff; /* 文字顏色改為白色 */
         }
         
         .pace-table th {
@@ -259,12 +261,13 @@
         }
         
         .pace-table tr:nth-child(even) {
-            background: #f9f9f9;
+            background: #111;
         }
         
         .pace-table tr.highlight {
-            background: #fff3e0;
+            background: #222;
             font-weight: 700;
+            border: 2px solid var(--primary);
         }
         
         /* Print Styles */
@@ -377,6 +380,15 @@
             
             <div class="form-grid">
                 <div class="form-group">
+                    <label>性別（用於建議手環尺寸）</label>
+                    <select id="gender">
+                        <option value="">請選擇性別</option>
+                        <option value="male">男士</option>
+                        <option value="female">女士</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <label>（姓名可選）</label>
                     <input type="text" id="name" placeholder="您的名字">
                 </div>
@@ -443,6 +455,11 @@
             <div class="info-box">
                 <h4>💡 什麼是配速手環？</h4>
                 <p>配速手環是一條標記著每公里目標時間的紙帶，跑步時套在手腕上，透過顏色區分配速區間，幫助您穩定配速、均勻出力，是馬拉松跑者必備的專業工具。</p>
+            </div>
+            
+            <div class="info-box" id="sizeRecommendation" style="display:none;">
+                <h4>📏 建議手環尺寸</h4>
+                <p id="sizeText"></p>
             </div>
             
             <button class="btn btn-primary" onclick="generateBracelet()">
@@ -525,9 +542,17 @@
             return `${m}:${s.toString().padStart(2, '0')}`;
         }
         
+        // Format pace with Chinese characters (e.g., 5:20/km (5分20秒/km))
+        function formatPaceChinese(secondsPerKm) {
+            const m = Math.floor(secondsPerKm / 60);
+            const s = Math.floor(secondsPerKm % 60);
+            return `${m}:${s.toString().padStart(2, '0')}/km (${m}分${s}秒/km)`;
+        }
+        
         // Main generation function
         function generateBracelet() {
             // Get inputs
+            const gender = document.getElementById('gender').value;
             const targetTime = document.getElementById('targetTime').value;
             const customTime = document.getElementById('customTime').value;
             const trainingPace = document.getElementById('trainingPace').value;
@@ -535,6 +560,20 @@
             const best10k = document.getElementById('best10k').value;
             const experience = document.getElementById('experience').value;
             const strategy = document.getElementById('strategy').value;
+            
+            // Show size recommendation based on gender
+            const sizeBox = document.getElementById('sizeRecommendation');
+            const sizeText = document.getElementById('sizeText');
+            if (gender) {
+                sizeBox.style.display = 'block';
+                if (gender === 'male') {
+                    sizeText.innerHTML = '寬度：約 3 公分（30mm）<br>長度：建議 20 公分以上';
+                } else {
+                    sizeText.innerHTML = '寬度：約 3 公分（30mm）<br>長度：建議約 16 公分';
+                }
+            } else {
+                sizeBox.style.display = 'none';
+            }
             
             // Determine target seconds
             let targetSeconds = 0;
@@ -625,7 +664,7 @@
                         <div class="bracelet-label">${isFinish ? '終點' : item.km + 'km'}</div>
                         <div class="bracelet-time ${labelClass}">
                             ${formatTime(item.cumulative)} 
-                            <span style="color:#888;font-size:10px;">(@${formatPace(item.pace)}/km)</span>
+                            <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
                         </div>
                     </div>
                 `;
@@ -659,7 +698,7 @@
                 tableHTML += `
                     <tr class="${highlight ? 'highlight' : ''}">
                         <td>${item.isFinish ? '42.195km' : item.km + 'km'}</td>
-                        <td>${formatPace(item.pace)}/km</td>
+                        <td>${formatPaceChinese(item.pace)}</td>
                         <td>${formatTime(item.cumulative)}</td>
                         <td>${note}</td>
                     </tr>
@@ -667,7 +706,7 @@
             });
             
             // Update result
-            document.getElementById('resultTitle').textContent = `目標：${formatTime(targetSeconds)} | 平均配速：${formatPace(avgPace)}/km`;
+            document.getElementById('resultTitle').textContent = `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
             document.getElementById('braceletContent').innerHTML = braceletHTML;
             document.getElementById('paceTable').innerHTML = tableHTML;
             
