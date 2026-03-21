@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>配速手環 - 跑步訓練助手</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Roboto+Mono:wght@500;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Roboto Mono', 'Noto Sans TC', monospace;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .bracelet-container {
+            max-width: 400px;
+            margin: 0 auto;
+            border: 3px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .bracelet-header {
+            background: #000;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .bracelet-header h1 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+        
+        .bracelet-header p {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        
+        .bracelet-row {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            font-size: 12px;
+        }
+        
+        .bracelet-row:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .km-label {
+            width: 70px;
+            padding: 8px;
+            font-weight: 700;
+            border-right: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            background: #eee;
+        }
+        
+        .time-display {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .time-display .cumulative {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+        
+        .time-display .pace {
+            font-size: 0.75em;
+            color: #666;
+        }
+        
+        .bracelet-row.half {
+            background: #ffeb3b !important;
+        }
+        
+        .bracelet-row.finish {
+            background: #4caf50 !important;
+            color: #fff;
+        }
+        
+        .bracelet-row.finish .km-label {
+            background: #388e3c;
+            color: #fff;
+        }
+        
+        .bracelet-row.highlight {
+            background: #e3f2fd;
+        }
+        
+        .bracelet-row.highlight .km-label {
+            background: #1976d2;
+            color: #fff;
+        }
+        
+        .bracelet-footer {
+            background: #f5f5f5;
+            padding: 10px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            
+            .bracelet-container {
+                border: 2px solid #000;
+                max-width: 100%;
+                width: 350px;
+            }
+            
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bracelet-container">
+        <div class="bracelet-header">
+            <h1>🏃 全馬配速手環</h1>
+            <p>目標時間：4:00:00 | 平均配速 5:41/km</p>
+        </div>
+        
+        <div class="bracelet-row">
+            <div class="km-label">Start</div>
+            <div class="time-display">
+                <div class="cumulative">0:00:00</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row highlight">
+            <div class="km-label">5km</div>
+            <div class="time-display">
+                <div class="cumulative">0:28:25</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row">
+            <div class="km-label">10km</div>
+            <div class="time-display">
+                <div class="cumulative">0:56:50</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row highlight">
+            <div class="km-label">15km</div>
+            <div class="time-display">
+                <div class="cumulative">1:25:15</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row highlight">
+            <div class="km-label">21km</div>
+            <div class="time-display">
+                <div class="cumulative">1:59:31</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row">
+            <div class="km-label">25km</div>
+            <div class="time-display">
+                <div class="cumulative">2:22:35</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row highlight">
+            <div class="km-label">30km</div>
+            <div class="time-display">
+                <div class="cumulative">2:50:30</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row">
+            <div class="km-label">35km</div>
+            <div class="time-display">
+                <div class="cumulative">3:18:25</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row highlight">
+            <div class="km-label">40km</div>
+            <div class="time-display">
+                <div class="cumulative">3:46:20</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-row finish">
+            <div class="km-label">🏆 終點</div>
+            <div class="time-display">
+                <div class="cumulative">4:00:00</div>
+                <div class="pace">@ 5:41/km</div>
+            </div>
+        </div>
+        
+        <div class="bracelet-footer">
+            前5公里熱身 | 25-30公里維持 | 最後衝刺
+        </div>
+    </div>
+</body>
+</html>

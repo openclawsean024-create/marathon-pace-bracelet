@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全馬配速手環 - 專業跑者訓練助手</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #ff6b35;
+            --secondary: #1a1a2e;
+            --accent: #00d4aa;
+            --light: #f7f7f7;
+            --dark: #16213e;
+            --gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 1.1em;
+        }
+        
+        /* Card */
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title span {
+            font-size: 1.5em;
+        }
+        
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group.full {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Roboto Mono', monospace;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(255,107,53,0.2);
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        
+        /* Result Section */
+        #result {
+            display: none;
+        }
+        
+        .result-header {
+            text-align: center;
+            padding: 20px;
+            background: var(--gradient);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        
+        .result-header p {
+            opacity: 0.9;
+        }
+        
+        /* Bracelet Design */
+        .bracelet-preview {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            color: #333;
+            margin: 20px 0;
+        }
+        
+        .bracelet {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+        }
+        
+        .bracelet-row {
+            display: flex;
+            border: 1px solid #333;
+        }
+        
+        .bracelet-label {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            font-weight: 700;
+            min-width: 80px;
+            border-right: 1px solid #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .bracelet-time {
+            padding: 8px 12px;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+            background: #fff;
+        }
+        
+        .bracelet-time.split {
+            background: #fff3e0;
+        }
+        
+        .bracelet-time.half {
+            background: #ffe0b2;
+            font-weight: 700;
+        }
+        
+        /* Pace Table */
+        .pace-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        
+        .pace-table th, .pace-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            background: #000; /* 文字底色統一為黑色 */
+            color: #fff; /* 文字顏色改為白色 */
+        }
+        
+        .pace-table th {
+            background: var(--primary);
+            color: #fff;
+        }
+        
+        .pace-table tr:nth-child(even) {
+            background: #111;
+        }
+        
+        .pace-table tr.highlight {
+            background: #222;
+            font-weight: 700;
+            border: 2px solid var(--primary);
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+                padding: 0;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .card {
+                background: #fff;
+                border: none;
+                padding: 10px;
+            }
+            
+            .bracelet-preview {
+                box-shadow: none;
+                border: 2px solid #000;
+            }
+        }
+        
+        /* Tips */
+        .tips {
+            background: rgba(0,212,170,0.1);
+            border: 1px solid rgba(0,212,170,0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .tips h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .tips ul {
+            padding-left: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .tips li {
+            margin: 5px 0;
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,107,53,0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(255,107,53,0.1);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .info-box h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .info-box p {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header no-print">
+            <h1>🏃 全馬配速手環</h1>
+            <p>專業跑步教練為您規劃個人化配速策略</p>
+        </div>
+        
+        <!-- Input Form -->
+        <div class="card no-print" id="inputForm">
+            <div class="card-title">
+                <span>📋</span> 輸入您的跑步資料
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>性別（用於建議手環尺寸）</label>
+                    <select id="gender">
+                        <option value="">請選擇性別</option>
+                        <option value="male">男士</option>
+                        <option value="female">女士</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>（姓名可選）</label>
+                    <input type="text" id="name" placeholder="您的名字">
+                </div>
+                
+                <div class="form-group">
+                    <label>目標完賽時間</label>
+                    <select id="targetTime">
+                        <option value="">請選擇目標時間</option>
+                        <option value="3:00">3 小時（sub-3）</option>
+                        <option value="3:30">3 小時 30 分</option>
+                        <option value="4:00">4 小時</option>
+                        <option value="4:30">4 小時 30 分</option>
+                        <option value="5:00">5 小時</option>
+                        <option value="5:30">5 小時 30 分</option>
+                        <option value="6:00">6 小時</option>
+                        <option value="custom">自訂時間</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="customTimeGroup" style="display:none;">
+                    <label>自訂目標時間（小時:分:秒）</label>
+                    <input type="text" id="customTime" placeholder="例如：3:45:00">
+                    <div class="hint">格式：小時:分:秒，例如 3:45:00</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>平時訓練配速（每公里）</label>
+                    <input type="text" id="trainingPace" placeholder="例如：5:30">
+                    <div class="hint">格式：分:秒，例如 5:30 代表每公里 5 分 30 秒</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>您最佳的半馬成績</label>
+                    <input type="text" id="halfMarathon" placeholder="例如：1:45:30">
+                    <div class="hint">半馬距離 21.0975 公里</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>您最佳的 10 公里成績</label>
+                    <input type="text" id="best10k" placeholder="例如：48:30">
+                    <div class="hint">可帮助教练更准确评估您的能力</div>
+                </div>
+                
+                <div class="form-group full">
+                    <label>跑步經驗</label>
+                    <select id="experience">
+                        <option value="beginner">初馬（第一次跑全馬）</option>
+                        <option value="intermediate">有經驗（已有 1-3 次全馬）</option>
+                        <option value="advanced">資深跑者（3 次以上全馬）</option>
+                        <option value="elite">競技水平（sub-3:30 目標）</option>
+                    </select>
+                </div>
+                
+                <div class="form-group full">
+                    <label>策略偏好</label>
+                    <select id="strategy">
+                        <option value="even">均速策略（全程穩定配速）</option>
+                        <option value="negative">負分割（前慢後快）</option>
+                        <option value="positive">正分割（前快後慢）</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 什麼是配速手環？</h4>
+                <p>配速手環是一條標記著每公里目標時間的紙帶，跑步時套在手腕上，透過顏色區分配速區間，幫助您穩定配速、均勻出力，是馬拉松跑者必備的專業工具。</p>
+            </div>
+            
+            <div class="info-box" id="sizeRecommendation" style="display:none;">
+                <h4>📏 建議手環尺寸</h4>
+                <p id="sizeText"></p>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateBracelet()">
+                <span>🎯</span> 生成配速手環
+            </button>
+        </div>
+        
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>教練正在為您規劃專業配速策略...</p>
+        </div>
+        
+        <!-- Result -->
+        <div class="card" id="result">
+            <div class="result-header">
+                <h2>🏆 您的專屬配速手環</h2>
+                <p id="resultTitle">目標：4 小時 00 分</p>
+            </div>
+            
+            <div class="bracelet-preview" id="braceletPreview">
+                <h3 style="text-align:center;margin-bottom:15px;color:#333;">🏃 全馬配速手環</h3>
+                <div class="bracelet" id="braceletContent">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="tips">
+                <h4>📌 使用說明</h4>
+                <ul>
+                    <li>將手環套在手腕上，數字朝外</li>
+                    <li>每到達一個公里標記，對照手環確認配速</li>
+                    <li>顏色說明：淺色 = 一般配速，深色 = 半程標記</li>
+                    <li>前 5 公里請放慢腳步熱身，不要急於加速</li>
+                    <li>逢整數公里檢查配速，適時調整</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top:20px;">
+                <h4 style="margin-bottom:15px;">📊 詳細配速表</h4>
+                <table class="pace-table" id="paceTable">
+                    <!-- Generated by JavaScript -->
+                </table>
+            </div>
+            
+            <div class="btn-group no-print">
+                <button class="btn btn-primary" onclick="window.print()">
+                    <span>🖨️</span> 列印手環
+                </button>
+                <button class="btn btn-secondary" onclick="resetForm()">
+                    <span>🔄</span> 重新產生
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Time parsing utilities
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':').map(p => parseInt(p) || 0);
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            return 0;
+        }
+        
+        function formatTime(seconds, showHours = true) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            
+            if (showHours && h > 0) {
+                return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        function formatPace(secondsPerKm) {
+            const m = Math.floor(secondsPerKm / 60);
+            const s = Math.floor(secondsPerKm % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        // Format pace with Chinese characters (e.g., 5:20/km (5分20秒/km))
+        function formatPaceChinese(secondsPerKm) {
+            const m = Math.floor(secondsPerKm / 60);
+            const s = Math.floor(secondsPerKm % 60);
+            return `${m}:${s.toString().padStart(2, '0')}/km (${m}分${s}秒/km)`;
+        }
+        
+        // Main generation function
+        function generateBracelet() {
+            // Get inputs
+            const gender = document.getElementById('gender').value;
+            const targetTime = document.getElementById('targetTime').value;
+            const customTime = document.getElementById('customTime').value;
+            const trainingPace = document.getElementById('trainingPace').value;
+            const halfMarathon = document.getElementById('halfMarathon').value;
+            const best10k = document.getElementById('best10k').value;
+            const experience = document.getElementById('experience').value;
+            const strategy = document.getElementById('strategy').value;
+            
+            // Show size recommendation based on gender
+            const sizeBox = document.getElementById('sizeRecommendation');
+            const sizeText = document.getElementById('sizeText');
+            if (gender) {
+                sizeBox.style.display = 'block';
+                if (gender === 'male') {
+                    sizeText.innerHTML = '寬度：約 3 公分（30mm）<br>長度：建議 20 公分以上';
+                } else {
+                    sizeText.innerHTML = '寬度：約 3 公分（30mm）<br>長度：建議約 16 公分';
+                }
+            } else {
+                sizeBox.style.display = 'none';
+            }
+            
+            // Determine target seconds
+            let targetSeconds = 0;
+            if (targetTime === 'custom') {
+                targetSeconds = parseTime(customTime);
+            } else if (targetTime) {
+                targetSeconds = parseTime(targetTime);
+            }
+            
+            // If no target, estimate from training pace or race times
+            if (!targetSeconds) {
+                if (halfMarathon) {
+                    // Use half marathon time * 2.1 (typical deterioration)
+                    const halfSeconds = parseTime(halfMarathon);
+                    targetSeconds = halfSeconds * 2.1;
+                } else if (best10k) {
+                    // Estimate from 10k
+                    const tenKSeconds = parseTime(best10k);
+                    targetSeconds = tenKSeconds * 4.5;
+                } else if (trainingPace) {
+                    // Estimate from training pace
+                    const paceSeconds = parseTime(trainingPace);
+                    targetSeconds = paceSeconds * 42.195;
+                } else {
+                    alert('請輸入至少一項數據來計算配速');
+                    return;
+                }
+            }
+            
+            // Calculate average pace
+            const avgPace = targetSeconds / 42.195;
+            
+            // Apply strategy modifications
+            let paceProfile = [];
+            const basePace = avgPace;
+            
+            for (let km = 1; km <= 42; km++) {
+                let pace = basePace;
+                
+                // Warm up: first 5km slower
+                if (km <= 5) {
+                    pace = basePace * 1.05;
+                }
+                // Final push: last 7km faster (if negative split)
+                else if (strategy === 'negative' && km > 35) {
+                    pace = basePace * 0.96;
+                }
+                // Positive split: first half faster
+                else if (strategy === 'positive' && km <= 21) {
+                    pace = basePace * 0.97;
+                }
+                // Even strategy: very stable
+                else if (strategy === 'even') {
+                    pace = basePace;
+                }
+                
+                paceProfile.push({
+                    km: km,
+                    pace: pace,
+                    cumulative: pace * km
+                });
+            }
+            
+            // Adjust last 195m
+            paceProfile.push({
+                km: 42.195,
+                pace: basePace,
+                cumulative: targetSeconds,
+                isFinish: true
+            });
+            
+            // Generate bracelet HTML
+            let braceletHTML = '';
+            let cumulativeTime = 0;
+            
+            paceProfile.forEach((item, index) => {
+                const isHalf = item.km === 21 || item.km === 21.0975;
+                const isFinish = item.isFinish;
+                const is5k = item.km % 5 === 0;
+                const is10k = item.km % 10 === 0;
+                
+                let labelClass = '';
+                if (isHalf) labelClass = 'half';
+                else if (is5k || is10k) labelClass = 'split';
+                
+                braceletHTML += `
+                    <div class="bracelet-row">
+                        <div class="bracelet-label">${isFinish ? '終點' : item.km + 'km'}</div>
+                        <div class="bracelet-time ${labelClass}">
+                            ${formatTime(item.cumulative)} 
+                            <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Generate table HTML
+            let tableHTML = `
+                <tr>
+                    <th>公里數</th>
+                    <th>配速</th>
+                    <th>累積時間</th>
+                    <th>階段說明</th>
+                </tr>
+            `;
+            
+            paceProfile.forEach(item => {
+                let note = '';
+                if (item.km === 1) note = '🏃 開始';
+                else if (item.km === 5) note = '🔥 熱身結束';
+                else if (item.km === 10) note = '💪 第一檢查點';
+                else if (item.km === 15) note = '🎯 半程過渡';
+                else if (item.km === 21) note = '⏰ 半程';
+                else if (item.km === 25) note = '🔥 撞牆期前';
+                else if (item.km === 30) note = '💪 突破瓶頸';
+                else if (item.km === 35) note = '🎯 最後衝刺';
+                else if (item.km === 40) note = '🏁 終點不遠';
+                else if (item.isFinish) note = '🏆 完賽！';
+                
+                let highlight = item.km === 21 || item.isFinish || item.km === 10 || item.km === 30;
+                
+                tableHTML += `
+                    <tr class="${highlight ? 'highlight' : ''}">
+                        <td>${item.isFinish ? '42.195km' : item.km + 'km'}</td>
+                        <td>${formatPaceChinese(item.pace)}</td>
+                        <td>${formatTime(item.cumulative)}</td>
+                        <td>${note}</td>
+                    </tr>
+                `;
+            });
+            
+            // Update result
+            document.getElementById('resultTitle').textContent = `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
+            document.getElementById('braceletContent').innerHTML = braceletHTML;
+            document.getElementById('paceTable').innerHTML = tableHTML;
+            
+            // Show result
+            document.getElementById('inputForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            
+            // Scroll to result
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('inputForm').style.display = 'block';
+        }
+        
+        // Show/hide custom time input
+        document.getElementById('targetTime').addEventListener('change', function() {
+            document.getElementById('customTimeGroup').style.display = 
+                this.value === 'custom' ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
