@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="專業馬拉松配速手環生成器，幫助跑者制定個人化配速策略">
+    <meta name="theme-color" content="#ff6b35">
+    <meta property="og:title" content="全馬配速手環 - 專業跑者訓練助手">
+    <meta property="og:description" content="專業馬拉松配速手環生成器，幫助跑者制定個人化配速策略">
+    <meta property="og:type" content="website">
     <title>全馬配速手環 - 專業跑者訓練助手</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap');
@@ -16,19 +21,32 @@
             --light: #f7f7f7;
             --dark: #16213e;
             --gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            --font-sans: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'Roboto Mono', 'SF Mono', 'Consolas', monospace;
         }
         
         body {
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: var(--font-sans);
             background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
             min-height: 100vh;
             color: #fff;
             padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .container {
             max-width: 900px;
             margin: 0 auto;
+        }
+        
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
         
         /* Header */
@@ -80,12 +98,30 @@
             gap: 20px;
         }
         
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full {
+                grid-column: span 1;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+        
         .form-group {
             margin-bottom: 15px;
         }
         
         .form-group.full {
             grid-column: span 2;
+        }
+        
+        @media (max-width: 640px) {
+            .form-group.full {
+                grid-column: span 1;
+            }
         }
         
         label {
@@ -103,20 +139,46 @@
             border-radius: 10px;
             color: #fff;
             font-size: 16px;
-            font-family: 'Roboto Mono', monospace;
-            transition: all 0.3s;
+            font-family: var(--font-mono);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
         }
         
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255,107,53,0.2);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25);
+            background: rgba(255,255,255,0.12);
+        }
+        
+        input:invalid:not(:placeholder-shown) {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
         }
         
         .hint {
             font-size: 12px;
             color: #666;
             margin-top: 5px;
+        }
+        
+        .form-error {
+            font-size: 12px;
+            color: #ff6b6b;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-group.has-error .form-error {
+            display: block;
+        }
+        
+        .form-group.has-error input,
+        .form-group.has-error select {
+            border-color: #ff6b6b;
         }
         
         /* Buttons */
@@ -127,10 +189,16 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            user-select: none;
+        }
+        
+        .btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
         
         .btn-primary {
@@ -145,6 +213,10 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(255,107,53,0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
         }
         
         .btn-secondary {
@@ -163,6 +235,12 @@
             margin-top: 20px;
         }
         
+        @media (max-width: 480px) {
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+        
         .btn-group .btn {
             flex: 1;
             justify-content: center;
@@ -171,6 +249,18 @@
         /* Result Section */
         #result {
             display: none;
+            animation: fadeSlideIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .result-header {
@@ -197,13 +287,20 @@
             padding: 30px;
             color: #333;
             margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 480px) {
+            .bracelet-preview {
+                padding: 15px;
+            }
         }
         
         .bracelet {
             display: flex;
             flex-direction: column;
             gap: 2px;
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 11px;
         }
         
@@ -220,6 +317,8 @@
             border-right: 1px solid #333;
             display: flex;
             align-items: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         
         .bracelet-time {
@@ -228,15 +327,21 @@
             text-align: center;
             flex: 1;
             background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         
         .bracelet-time.split {
             background: #fff3e0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         
         .bracelet-time.half {
             background: #ffe0b2;
             font-weight: 700;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         
         /* Pace Table */
@@ -245,29 +350,45 @@
             border-collapse: collapse;
             margin-top: 20px;
             font-size: 13px;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        @media (max-width: 640px) {
+            .pace-table {
+                font-size: 11px;
+            }
+            .pace-table th, .pace-table td {
+                padding: 8px 4px;
+            }
         }
         
         .pace-table th, .pace-table td {
             padding: 10px;
             text-align: center;
-            border: 1px solid #ddd;
-            background: #000; /* 文字底色統一為黑色 */
-            color: #fff; /* 文字顏色改為白色 */
+            border: 1px solid #333;
+            background: #1a1a2e;
+            color: #fff;
         }
         
         .pace-table th {
             background: var(--primary);
             color: #fff;
+            position: sticky;
+            top: 0;
         }
         
         .pace-table tr:nth-child(even) {
-            background: #111;
+            background: #16213e;
         }
         
         .pace-table tr.highlight {
-            background: #222;
+            background: #222 !important;
             font-weight: 700;
-            border: 2px solid var(--primary);
+        }
+        
+        .pace-table tr.highlight td {
+            border-color: var(--primary);
         }
         
         /* Print Styles */
@@ -276,6 +397,8 @@
                 background: #fff;
                 color: #000;
                 padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             
             .container {
@@ -290,11 +413,47 @@
                 background: #fff;
                 border: none;
                 padding: 10px;
+                box-shadow: none;
             }
             
             .bracelet-preview {
                 box-shadow: none;
                 border: 2px solid #000;
+                color: #000;
+            }
+            
+            .bracelet-label {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .bracelet-time {
+                background: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .bracelet-time.split {
+                background: #fff3e0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .bracelet-time.half {
+                background: #ffe0b2 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .pace-table th, .pace-table td {
+                background: #fff !important;
+                color: #000 !important;
+                border: 1px solid #000;
+            }
+            
+            .pace-table th {
+                background: #eee !important;
             }
         }
         
@@ -337,6 +496,13 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .loading-spinner {
+                animation: none;
+                border: 4px solid var(--primary);
+            }
         }
         
         @keyframes spin {
@@ -519,6 +685,7 @@
     <script>
         // Time parsing utilities
         function parseTime(timeStr) {
+            if (!timeStr || typeof timeStr !== 'string') return 0;
             const parts = timeStr.split(':').map(p => parseInt(p) || 0);
             if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
             if (parts.length === 2) return parts[0] * 60 + parts[1];
@@ -526,6 +693,7 @@
         }
         
         function formatTime(seconds, showHours = true) {
+            if (!seconds || isNaN(seconds)) return '0:00';
             const h = Math.floor(seconds / 3600);
             const m = Math.floor((seconds % 3600) / 60);
             const s = Math.floor(seconds % 60);
@@ -537,6 +705,7 @@
         }
         
         function formatPace(secondsPerKm) {
+            if (!secondsPerKm || isNaN(secondsPerKm)) return '0:00';
             const m = Math.floor(secondsPerKm / 60);
             const s = Math.floor(secondsPerKm % 60);
             return `${m}:${s.toString().padStart(2, '0')}`;
@@ -544,22 +713,76 @@
         
         // Format pace with Chinese characters (e.g., 5:20/km (5分20秒/km))
         function formatPaceChinese(secondsPerKm) {
+            if (!secondsPerKm || isNaN(secondsPerKm)) return '0:00/km (0分0秒/km)';
             const m = Math.floor(secondsPerKm / 60);
             const s = Math.floor(secondsPerKm % 60);
             return `${m}:${s.toString().padStart(2, '0')}/km (${m}分${s}秒/km)`;
         }
         
+        // Validation helper
+        function validateTimeInput(timeStr, fieldName) {
+            if (!timeStr) return true; // Optional fields
+            const parts = timeStr.split(':');
+            if (parts.length < 2 || parts.length > 3) return false;
+            const isValid = parts.every(p => !isNaN(parseInt(p)) && parseInt(p) >= 0);
+            return isValid;
+        }
+        
+        // Show validation error
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            let errorEl = formGroup.querySelector('.form-error');
+            
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'form-error';
+                formGroup.appendChild(errorEl);
+            }
+            
+            errorEl.textContent = message;
+            formGroup.classList.add('has-error');
+        }
+        
+        // Clear validation error
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            formGroup.classList.remove('has-error');
+        }
+        
         // Main generation function
         function generateBracelet() {
+            // Clear previous errors
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
+            
             // Get inputs
             const gender = document.getElementById('gender').value;
             const targetTime = document.getElementById('targetTime').value;
-            const customTime = document.getElementById('customTime').value;
-            const trainingPace = document.getElementById('trainingPace').value;
-            const halfMarathon = document.getElementById('halfMarathon').value;
-            const best10k = document.getElementById('best10k').value;
+            const customTime = document.getElementById('customTime').value.trim();
+            const trainingPace = document.getElementById('trainingPace').value.trim();
+            const halfMarathon = document.getElementById('halfMarathon').value.trim();
+            const best10k = document.getElementById('best10k').value.trim();
             const experience = document.getElementById('experience').value;
             const strategy = document.getElementById('strategy').value;
+            
+            // Validate optional time fields
+            if (customTime && !validateTimeInput(customTime, 'customTime')) {
+                showFieldError('customTime', '請輸入正確的時間格式，如 3:45:00');
+                return;
+            }
+            if (trainingPace && !validateTimeInput(trainingPace, 'trainingPace')) {
+                showFieldError('trainingPace', '請輸入正確的配速格式，如 5:30');
+                return;
+            }
+            if (halfMarathon && !validateTimeInput(halfMarathon, 'halfMarathon')) {
+                showFieldError('halfMarathon', '請輸入正確的時間格式，如 1:45:30');
+                return;
+            }
+            if (best10k && !validateTimeInput(best10k, 'best10k')) {
+                showFieldError('best10k', '請輸入正確的時間格式，如 48:30');
+                return;
+            }
             
             // Show size recommendation based on gender
             const sizeBox = document.getElementById('sizeRecommendation');
@@ -601,6 +824,12 @@
                     alert('請輸入至少一項數據來計算配速');
                     return;
                 }
+            }
+            
+            // Validate target is reasonable (between 1:30:00 and 8:00:00 for marathon)
+            if (targetSeconds < 5400 || targetSeconds > 28800) {
+                alert('馬拉松完賽時間建議在 1:30:00 到 8:00:00 之間');
+                return;
             }
             
             // Calculate average pace
@@ -647,9 +876,8 @@
             
             // Generate bracelet HTML
             let braceletHTML = '';
-            let cumulativeTime = 0;
             
-            paceProfile.forEach((item, index) => {
+            paceProfile.forEach((item) => {
                 const isHalf = item.km === 21 || item.km === 21.0975;
                 const isFinish = item.isFinish;
                 const is5k = item.km % 5 === 0;
@@ -660,9 +888,9 @@
                 else if (is5k || is10k) labelClass = 'split';
                 
                 braceletHTML += `
-                    <div class="bracelet-row">
-                        <div class="bracelet-label">${isFinish ? '終點' : item.km + 'km'}</div>
-                        <div class="bracelet-time ${labelClass}">
+                    <div class="bracelet-row" role="row" aria-label="${item.km}公里">
+                        <div class="bracelet-label" role="rowheader">${isFinish ? '終點' : item.km + 'km'}</div>
+                        <div class="bracelet-time ${labelClass}" role="cell">
                             ${formatTime(item.cumulative)} 
                             <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
                         </div>
@@ -672,12 +900,15 @@
             
             // Generate table HTML
             let tableHTML = `
-                <tr>
-                    <th>公里數</th>
-                    <th>配速</th>
-                    <th>累積時間</th>
-                    <th>階段說明</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th scope="col">公里數</th>
+                        <th scope="col">配速</th>
+                        <th scope="col">累積時間</th>
+                        <th scope="col">階段說明</th>
+                    </tr>
+                </thead>
+                <tbody>
             `;
             
             paceProfile.forEach(item => {
@@ -705,29 +936,61 @@
                 `;
             });
             
+            tableHTML += '</tbody>';
+            
             // Update result
             document.getElementById('resultTitle').textContent = `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
             document.getElementById('braceletContent').innerHTML = braceletHTML;
             document.getElementById('paceTable').innerHTML = tableHTML;
             
-            // Show result
+            // Show result with animation
             document.getElementById('inputForm').style.display = 'none';
             document.getElementById('loading').style.display = 'none';
             document.getElementById('result').style.display = 'block';
             
             // Scroll to result
-            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Focus the print button for accessibility
+            setTimeout(() => {
+                const printBtn = document.querySelector('#result .btn-primary');
+                if (printBtn) printBtn.focus();
+            }, 400);
         }
         
         function resetForm() {
             document.getElementById('result').style.display = 'none';
             document.getElementById('inputForm').style.display = 'block';
+            // Clear error states
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
         }
         
         // Show/hide custom time input
         document.getElementById('targetTime').addEventListener('change', function() {
             document.getElementById('customTimeGroup').style.display = 
                 this.value === 'custom' ? 'block' : 'none';
+        });
+        
+        // Real-time validation on input
+        ['trainingPace', 'halfMarathon', 'best10k', 'customTime'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('blur', function() {
+                    if (this.value.trim() && !validateTimeInput(this.value, id)) {
+                        showFieldError(id, '時間格式不正確');
+                    } else {
+                        clearFieldError(id);
+                    }
+                });
+            }
+        });
+        
+        // Auto-focus first input on load
+        window.addEventListener('load', () => {
+            const firstInput = document.querySelector('#inputForm input:not([type="hidden"])');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 100);
+            }
         });
     </script>
 </body>
