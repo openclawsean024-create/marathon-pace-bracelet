@@ -1515,8 +1515,8 @@
             if (gender) {
                 sizeBox.classList.add('show');
                 sizeText.innerHTML = gender === 'male'
-                    ? '📏 建議手環：寬度約 3 公分（30mm），長度建議 20 公分以上'
-                    : '📏 建議手環：寬度約 3 公分（30mm），長度建議約 16 公分';
+                    ? 'SIZE: Width ~30mm, recommended length 20cm+'
+                    : 'SIZE: Width ~30mm, recommended length ~16cm';
             } else {
                 sizeBox.classList.remove('show');
             }
@@ -1561,7 +1561,7 @@
                 else if (is5k || is10k) labelClass = 'split';
                 braceletHTML += `
                     <div class="bracelet-row">
-                        <div class="bracelet-label">${item.isFinish ? '終點' : item.km + 'km'}</div>
+                        <div class="bracelet-label">${item.isFinish ? 'FINISH' : item.km + 'km'}</div>
                         <div class="bracelet-time ${labelClass}">
                             ${formatTime(item.cumulative)}
                             <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
@@ -1570,16 +1570,16 @@
             });
 
             /* Build table */
-            let tableHTML = `<thead><tr><th>公里數</th><th>配速</th><th>累積時間</th><th>階段說明</th></tr></thead><tbody>`;
+            let tableHTML = `<thead><tr><th>Km</th><th>Pace</th><th>Cumulative</th><th>Note</th></tr></thead><tbody>`;
             const notes = {
-                1: 'RUN 開始', 5: 'BURN 熱身結束', 10: 'POWER 第一檢查點',
-                15: 'TARGET 半程過渡', 21: 'CLOCK 半程', 25: 'BURN 撞牆期前',
-                30: 'POWER 突破瓶頸', 35: 'TARGET 最後衝刺', 40: 'FINISH 終點不遠', 42.195: 'TROPHY 完賽！'
+                1: 'START', 5: 'WARM-UP END', 10: 'CHECKPOINT 1',
+                15: 'HALFWAY APPROACH', 21: 'HALFWAY', 25: 'WALL ZONE',
+                30: 'BREAKTHROUGH', 35: 'FINAL SPRINT', 40: 'ALMOST DONE', 42.195: 'FINISH!'
             };
             const highlights = [1, 10, 21, 30, 42.195];
 
             paceProfile.forEach(item => {
-                const note = notes[item.km] || (item.km % 5 === 0 ? '📍 檢查點' : '');
+                const note = notes[item.km] || (item.km % 5 === 0 ? '- CHECK' : '');
                 const hl = highlights.includes(item.km);
                 tableHTML += `<tr class="${hl ? 'highlight' : ''}">
                     <td>${item.isFinish ? '42.195km' : item.km + 'km'}</td>
