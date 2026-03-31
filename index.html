@@ -590,6 +590,7 @@
             font-family: var(--font-mono);
             transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
             -webkit-appearance: none;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04);
         }
 
         select { cursor: pointer; }
@@ -1181,28 +1182,28 @@
     <!-- STATS BAR -->
     <div class="stats-bar no-print">
         <div class="stats-bar-item">
-            <div class="stats-bar-icon">🏅</div>
+            <div class="stats-bar-icon">◈</div>
             <div>
                 <div class="stats-bar-label">完賽策略</div>
                 <div class="stats-bar-value">均速 / 負分割</div>
             </div>
         </div>
         <div class="stats-bar-item">
-            <div class="stats-bar-icon">⚡</div>
+            <div class="stats-bar-icon">|</div>
             <div>
                 <div class="stats-bar-label">智慧計算</div>
                 <div class="stats-bar-value">即時分段配速</div>
             </div>
         </div>
         <div class="stats-bar-item">
-            <div class="stats-bar-icon">🖨️</div>
+            <div class="stats-bar-icon">⎙</div>
             <div>
                 <div class="stats-bar-label">一鍵列印</div>
                 <div class="stats-bar-value">可印刷手環格式</div>
             </div>
         </div>
         <div class="stats-bar-item">
-            <div class="stats-bar-icon">📱</div>
+            <div class="stats-bar-icon">◐</div>
             <div>
                 <div class="stats-bar-label">響應式設計</div>
                 <div class="stats-bar-value">任何裝置流暢使用</div>
@@ -1221,32 +1222,32 @@
             </h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
+                    <div class="feature-icon">◎</div>
                     <div class="feature-title">智能配速計算</div>
                     <div class="feature-desc">根據您的目標時間、訓練配速、過往比賽資料，自動計算最佳分段配速策略。</div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📋</div>
+                    <div class="feature-icon">☰</div>
                     <div class="feature-title">可印刷手環格式</div>
                     <div class="feature-desc">生成專為馬拉松跑者設計的配速手環，裁切後套在手腕上，顏色標記分段，轻松掌握配速節奏。</div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">|</div>
                     <div class="feature-title">多種策略模式</div>
                     <div class="feature-desc">支持均速策略、負分割（前慢後快）、正分割（前快後慢），根據您的體力分配選擇最適方案。</div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🏃</div>
+                    <div class="feature-icon">/</div>
                     <div class="feature-title">熱身受段建議</div>
                     <div class="feature-desc">前 5 公里熱身、25-30 公里撞牆期預測、最後衝刺建議，全程配速一目了然。</div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon">▤</div>
                     <div class="feature-title">詳細配速表</div>
                     <div class="feature-desc">完整 42 段配速表，包含每公里分段時間、累積時間、階段說明，方便分析與調整。</div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
+                    <div class="feature-icon">↻</div>
                     <div class="feature-title">即時重新生成</div>
                     <div class="feature-desc">更換策略或目標時間，一鍵重新計算，隨時根據身體狀況動態調整配速計劃。</div>
                 </div>
@@ -1343,7 +1344,7 @@
                 </div>
 
                 <button class="btn-generate" onclick="generateBracelet()">
-                    🎯 生成配速手環
+                    ◎ 生成配速手環
                 </button>
             </div>
         </section>
@@ -1352,12 +1353,12 @@
         <section id="result">
             <div class="result-card">
                 <div class="result-header">
-                    <h2>🏆 您的專屬配速手環</h2>
+                    <h2>★ 您的專屬配速手環</h2>
                     <p id="resultTitle">目標：4 小時 00 分</p>
                 </div>
 
                 <div class="bracelet-preview" id="braceletPreview">
-                    <div class="bracelet-preview-title">🏃 全馬配速手環</div>
+                    <div class="bracelet-preview-title">/ 全馬配速手環</div>
                     <div class="bracelet" id="braceletContent"></div>
                 </div>
 
@@ -1378,10 +1379,10 @@
 
                 <div class="result-actions">
                     <button class="btn-result btn-result-primary" onclick="window.print()">
-                        🖨️ 列印手環
+                        ⎙ 列印手環
                     </button>
                     <button class="btn-result btn-result-secondary" onclick="resetForm()">
-                        🔄 重新產生
+                        ↻ 重新產生
                     </button>
                 </div>
             </div>
@@ -1392,7 +1393,7 @@
             <h2>準備好征服您的下一場馬拉松了嗎？</h2>
             <p>不論是首馬挑戰還是突破 PB，專業的配速策略是成功完賽的關鍵。現在就開始製作您的專屬配速手環。</p>
             <a href="#generator" class="btn-main" style="display:inline-flex;">
-                🏃 立即開始
+                / 立即開始
             </a>
         </section>
     </div>
