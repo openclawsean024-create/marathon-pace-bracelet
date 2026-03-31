@@ -1122,7 +1122,7 @@
     <!-- NAV -->
     <nav class="nav no-print">
         <a href="#" class="nav-logo">
-            <div class="nav-logo-icon">RUN</div>
+            <div class="nav-logo-icon">🏃</div>
             <div class="nav-logo-text">Pace<span>Band</span></div>
         </a>
         <ul class="nav-links">
@@ -1229,7 +1229,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">☰</div>
                     <div class="feature-title">可印刷手環格式</div>
-                    <div class="feature-desc">生成專為馬拉松跑者設計的配速手環，裁切後套在手腕上，顏色標記分段，轻松掌握配速節奏。</div>
+                    <div class="feature-desc">生成專為馬拉松跑者設計的配速手環，裁切後套在手腕上，顏色標記分段，輕鬆掌握配速節奏。</div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">|</div>
@@ -1293,13 +1293,13 @@
                     <div class="form-group" id="customTimeGroup" style="display:none;">
                         <label>自訂目標時間（小時:分:秒）</label>
                         <input type="text" id="customTime" placeholder="例如：3:45:00">
-                        <div class="hint">格式：小時:分:秒，例如 3:45:00</div>
+                        <div class="hint">例如：3:45:00</div>
                     </div>
 
                     <div class="form-group">
                         <label>平時訓練配速（每公里）</label>
                         <input type="text" id="trainingPace" placeholder="例如：5:30">
-                        <div class="hint">格式：分:秒，例如 5:30 代表每公里 5 分 30 秒</div>
+                        <div class="hint">例如：5:30，代表每公里 5 分 30 秒</div>
                     </div>
 
                     <div class="form-group">
@@ -1311,7 +1311,7 @@
                     <div class="form-group">
                         <label>您最佳的 10 公里成績</label>
                         <input type="text" id="best10k" placeholder="例如：48:30">
-                        <div class="hint">可幫教練更準確評估您的能力</div>
+                        <div class="hint">教練可根據此數據更準確評估您的能力</div>
                     </div>
 
                     <div class="form-group full">
@@ -1353,12 +1353,12 @@
         <section id="result">
             <div class="result-card">
                 <div class="result-header">
-                    <h2>★ 您的專屬配速手環</h2>
+                    <h2>您的專屬配速手環</h2>
                     <p id="resultTitle">目標：4 小時 00 分</p>
                 </div>
 
                 <div class="bracelet-preview" id="braceletPreview">
-                    <div class="bracelet-preview-title">/ 全馬配速手環</div>
+                    <div class="bracelet-preview-title">全馬配速手環</div>
                     <div class="bracelet" id="braceletContent"></div>
                 </div>
 
@@ -1393,7 +1393,7 @@
             <h2>準備好征服您的下一場馬拉松了嗎？</h2>
             <p>不論是首馬挑戰還是突破 PB，專業的配速策略是成功完賽的關鍵。現在就開始製作您的專屬配速手環。</p>
             <a href="#generator" class="btn-main" style="display:inline-flex;">
-                / 立即開始
+                立即開始
             </a>
         </section>
     </div>
@@ -1562,7 +1562,7 @@
                 else if (is5k || is10k) labelClass = 'split';
                 braceletHTML += `
                     <div class="bracelet-row">
-                        <div class="bracelet-label">${item.isFinish ? 'FINISH' : item.km + 'km'}</div>
+                        <div class="bracelet-label">${item.isFinish ? '終點' : item.km + '公里'}</div>
                         <div class="bracelet-time ${labelClass}">
                             ${formatTime(item.cumulative)}
                             <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
@@ -1580,10 +1580,10 @@
             const highlights = [1, 10, 21, 30, 42.195];
 
             paceProfile.forEach(item => {
-                const note = notes[item.km] || (item.km % 5 === 0 ? '- CHECK' : '');
+                const note = notes[item.km] || (item.km % 5 === 0 ? '— 檢查點' : '');
                 const hl = highlights.includes(item.km);
                 tableHTML += `<tr class="${hl ? 'highlight' : ''}">
-                    <td>${item.isFinish ? '42.195km' : item.km + 'km'}</td>
+                    <td>${item.isFinish ? '42.195 公里' : item.km + ' 公里'}</td>
                     <td>${formatPaceChinese(item.pace)}</td>
                     <td>${formatTime(item.cumulative)}</td>
                     <td>${note}</td>
