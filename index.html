@@ -594,7 +594,7 @@
         }
 
         select { cursor: pointer; }
-        select option { background: #111; color: #fff; }
+        select option { background: #111; color: #ffffff; padding: 8px; }
 
         input::placeholder { color: rgba(255,255,255,0.2); }
 
@@ -751,7 +751,76 @@
             gap: 2px;
             font-family: var(--font-mono);
             font-size: 11px;
+            max-height: 340px;
+            overflow-y: auto;
         }
+
+        /* World Record Card */
+        .world-record-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-top: 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.08);
+        }
+        .world-record-card .wr-label {
+            font-size: 10px;
+            color: #ffd700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-family: var(--font-body);
+        }
+        .world-record-card .wr-time {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #fff;
+            font-family: var(--font-mono);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .world-record-card .wr-athlete {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 4px;
+        }
+        .world-record-card .wr-pace {
+            font-size: 12px;
+            color: #ffd700;
+            margin-top: 6px;
+            font-family: var(--font-mono);
+        }
+        .world-record-card .wr-event {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+        }
+
+        /* Full 42km table toggle */
+        .full-table-toggle { margin-top: 14px; text-align: center; }
+        .full-table-toggle button {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-body);
+        }
+        .full-table-toggle button:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+        #fullPaceTable { display: none; margin-top: 12px; }
+        #fullPaceTable.show { display: block; }
 
         .bracelet-row {
             display: flex;
@@ -1360,6 +1429,16 @@
                 <div class="bracelet-preview" id="braceletPreview">
                     <div class="bracelet-preview-title">全馬配速手環</div>
                     <div class="bracelet" id="braceletContent"></div>
+                    <div class="world-record-card" id="worldRecordCard">
+                        <div class="wr-label">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffd700" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            世界紀錄
+                        </div>
+                        <div class="wr-time">2:01:09</div>
+                        <div class="wr-athlete">Eliud Kipchoge</div>
+                        <div class="wr-pace">2:52/km</div>
+                        <div class="wr-event">2022 Berlin Marathon</div>
+                    </div>
                 </div>
 
                 <div class="tips-card">
@@ -1376,6 +1455,14 @@
                 <div class="pace-table-wrap">
                     <table class="pace-table" id="paceTable"></table>
                 </div>
+
+                <div class="full-table-toggle">
+                    <button onclick="toggleFullTable()" id="fullTableBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        顯示完整 42 公里分段表
+                    </button>
+                </div>
+                <div id="fullPaceTable"></div>
 
                 <div class="result-actions">
                     <button class="btn-result btn-result-primary" onclick="window.print()">
@@ -1494,6 +1581,84 @@
             if (formGroup) formGroup.classList.remove('has-error');
         }
 
+        // ── HALF GOLD STONE MARATHON ELEVATION DATA ──
+        const HALF_GOLD_STONE_ELEVATION = [
+            {km: 0,  elevation: 45,  cumulativeGain: 0},
+            {km: 1,  elevation: 52,  cumulativeGain: 10},
+            {km: 2,  elevation: 68,  cumulativeGain: 28},
+            {km: 3,  elevation: 95,  cumulativeGain: 58},
+            {km: 4,  elevation: 110, cumulativeGain: 78},
+            {km: 5,  elevation: 125, cumulativeGain: 96},
+            {km: 6,  elevation: 118, cumulativeGain: 98},
+            {km: 7,  elevation: 105, cumulativeGain: 100},
+            {km: 8,  elevation: 130, cumulativeGain: 128},
+            {km: 9,  elevation: 155, cumulativeGain: 158},
+            {km: 10, elevation: 148, cumulativeGain: 162},
+            {km: 11, elevation: 132, cumulativeGain: 165},
+            {km: 12, elevation: 120, cumulativeGain: 168},
+            {km: 13, elevation: 105, cumulativeGain: 170},
+            {km: 14, elevation: 118, cumulativeGain: 185},
+            {km: 15, elevation: 140, cumulativeGain: 208},
+            {km: 16, elevation: 125, cumulativeGain: 212},
+            {km: 17, elevation: 108, cumulativeGain: 215},
+            {km: 18, elevation: 95,  cumulativeGain: 218},
+            {km: 19, elevation: 80,  cumulativeGain: 220},
+            {km: 20, elevation: 72,  cumulativeGain: 225},
+            {km: 21, elevation: 65,  cumulativeGain: 230}
+        ];
+
+        function getMarathonElevation(km) {
+            if (km <= 21) {
+                const idx = Math.min(Math.floor(km), HALF_GOLD_STONE_ELEVATION.length - 1);
+                const next = Math.min(idx + 1, HALF_GOLD_STONE_ELEVATION.length - 1);
+                const t = km % 1;
+                const prev = HALF_GOLD_STONE_ELEVATION[idx];
+                const nxt = HALF_GOLD_STONE_ELEVATION[next];
+                return prev.elevation + (nxt.elevation - prev.elevation) * t;
+            }
+            const mirrorKm = 42 - km;
+            const idx = Math.min(Math.floor(mirrorKm), HALF_GOLD_STONE_ELEVATION.length - 1);
+            return (HALF_GOLD_STONE_ELEVATION[idx] || HALF_GOLD_STONE_ELEVATION[HALF_GOLD_STONE_ELEVATION.length - 1]).elevation;
+        }
+
+        function getElevationGain(km) {
+            if (km <= 0) return 0;
+            const prev = getMarathonElevation(km - 1);
+            const curr = getMarathonElevation(km);
+            return Math.max(0, curr - prev);
+        }
+
+        function toggleFullTable() {
+            const el = document.getElementById('fullPaceTable');
+            const btn = document.getElementById('fullTableBtn');
+            const isOpen = el.classList.contains('show');
+            if (isOpen) {
+                el.classList.remove('show');
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg> 顯示完整 42 公里分段表';
+            } else {
+                if (!el.innerHTML.trim()) {
+                    el.innerHTML = '<table class="pace-table"><thead><tr><th>公里</th><th>配速</th><th>累積時間</th><th>海拔(m)</th><th>說明</th></tr></thead><tbody id="fullTableBody"></tbody></table>';
+                    populateFullTable();
+                }
+                el.classList.add('show');
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg> 收合完整分段表';
+            }
+        }
+
+        function populateFullTable() {
+            const tbody = document.getElementById('fullTableBody');
+            if (!tbody || !window._lastPaceProfile) return;
+            const notes = {1:'▶ 起點',5:'★ 熱身結束',10:'◆ 第一檢查點',15:'◎ 半程過渡',21:'⏱ 半程',25:'◆ 撞牆期前',30:'★ 突破點',35:'◎ 最後衝刺',40:'⚑ 即將完賽',42.195:'★ 完賽！'};
+            let html = '';
+            window._lastPaceProfile.forEach(function(item) {
+                const note = notes[item.km] || '';
+                const elev = getMarathonElevation(item.km);
+                html += '<tr><td>' + (item.isFinish ? '42.195km' : item.km + 'km') + '</td><td>' + formatPaceChinese(item.pace) + '</td><td>' + formatTime(item.cumulative) + '</td><td>' + elev.toFixed(0) + 'm</td><td>' + note + '</td></tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+
         function generateBracelet() {
             document.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
 
@@ -1546,28 +1711,27 @@
                 else if (strategy === 'negative' && km > 35) pace = avgPace * 0.96;
                 else if (strategy === 'positive' && km <= 21) pace = avgPace * 0.97;
                 else if (strategy === 'even') pace = avgPace;
-                paceProfile.push({ km, pace, cumulative: pace * km });
+                // Terrain adjustment: elevation gain slows pace
+                const elevGain = getElevationGain(km);
+                if (elevGain > 20) pace *= 1.20;
+                else if (elevGain > 10) pace *= 1.12;
+                const elevLoss = -elevGain;
+                if (elevLoss > 15) pace = Math.min(pace * 0.97, avgPace);
+                paceProfile.push({ km, pace, cumulative: pace * km, elevation: getMarathonElevation(km) });
             }
 
-            paceProfile.push({ km: 42.195, pace: avgPace, cumulative: targetSeconds, isFinish: true });
+            paceProfile.push({ km: 42.195, pace: avgPace, cumulative: targetSeconds, isFinish: true, elevation: getMarathonElevation(42) });
 
-            /* Build bracelet */
+            /* Build bracelet (compact: every 5km + half + finish) */
             let braceletHTML = '';
+            const braceletKeypoints = new Set([5, 10, 15, 20, 21, 25, 30, 35, 40, 42.195]);
             paceProfile.forEach(item => {
-                const isHalf = item.km === 21 || item.km === 21.0975;
-                const is5k = item.km % 5 === 0;
-                const is10k = item.km % 10 === 0;
+                if (!braceletKeypoints.has(item.km)) return;
+                const isHalf = Math.abs(item.km - 21) < 0.5;
                 let labelClass = '';
                 if (isHalf) labelClass = 'half';
-                else if (is5k || is10k) labelClass = 'split';
-                braceletHTML += `
-                    <div class="bracelet-row">
-                        <div class="bracelet-label">${item.isFinish ? '終點' : item.km + '公里'}</div>
-                        <div class="bracelet-time ${labelClass}">
-                            ${formatTime(item.cumulative)}
-                            <span style="color:#888;font-size:10px;">(${formatPaceChinese(item.pace)})</span>
-                        </div>
-                    </div>`;
+                else if (item.km % 10 === 0) labelClass = 'split';
+                braceletHTML += '<div class="bracelet-row"><div class="bracelet-label">' + (item.isFinish ? '終點' : item.km + '公里') + '</div><div class="bracelet-time ' + labelClass + '">' + formatTime(item.cumulative) + ' <span style="color:#888;font-size:10px;">(' + formatPaceChinese(item.pace) + ')</span></div></div>';
             });
 
             /* Build table */
@@ -1591,10 +1755,27 @@
             });
             tableHTML += '</tbody>';
 
+            // Store globally for full table toggle
+            window._lastPaceProfile = paceProfile;
+
             document.getElementById('resultTitle').textContent =
                 `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
             document.getElementById('braceletContent').innerHTML = braceletHTML;
-            document.getElementById('paceTable').innerHTML = tableHTML;
+            // Rebuild table with elevation column
+            let tableHTML2 = '<thead><tr><th>公里</th><th>配速</th><th>累積時間</th><th>海拔(m)</th><th>階段說明</th></tr></thead><tbody>';
+            paceProfile.forEach(item => {
+                const note = notes[item.km] || (item.km % 5 === 0 ? '— 檢查點' : '');
+                const hl = highlights.includes(item.km);
+                tableHTML2 += '<tr class="' + (hl ? 'highlight' : '') + '"><td>' + (item.isFinish ? '42.195 公里' : item.km + ' 公里') + '</td><td>' + formatPaceChinese(item.pace) + '</td><td>' + formatTime(item.cumulative) + '</td><td>' + (item.elevation ? item.elevation.toFixed(0) + 'm' : '') + '</td><td>' + note + '</td></tr>';
+            });
+            tableHTML2 += '</tbody>';
+            document.getElementById('paceTable').innerHTML = tableHTML2;
+
+            // Reset full table toggle
+            const fullEl = document.getElementById('fullPaceTable');
+            const fullBtn = document.getElementById('fullTableBtn');
+            if (fullEl) { fullEl.classList.remove('show'); fullEl.innerHTML = ''; }
+            if (fullBtn) { fullBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg> 顯示完整 42 公里分段表'; }
 
             document.querySelector('.generator-section').style.display = 'none';
             document.getElementById('result').style.display = 'block';
