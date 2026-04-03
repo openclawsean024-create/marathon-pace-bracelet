@@ -593,8 +593,9 @@
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04);
         }
 
-        select { cursor: pointer; }
-        select option { background: #111; color: #ffffff; padding: 8px; }
+        select { cursor: pointer; background: #111; color: #fff; }
+        select option { background: #111 !important; color: #ffffff !important; padding: 8px; }
+        select optgroup { background: #111; color: #ffd700; }
 
         input::placeholder { color: rgba(255,255,255,0.2); }
 
@@ -733,6 +734,8 @@
             padding: 28px;
             margin: 24px;
             color: #111;
+            display: flex;
+            flex-direction: column;
         }
 
         .bracelet-preview-title {
@@ -745,6 +748,15 @@
             letter-spacing: -0.3px;
         }
 
+        /* Flex row: bracelet on left, world record + elevation chart stacked on right */
+        .bracelet-preview-body {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .bracelet-section { flex: 1; min-width: 0; }
+
         .bracelet {
             display: flex;
             flex-direction: column;
@@ -755,15 +767,23 @@
             overflow-y: auto;
         }
 
+        /* World Record + Elevation stacked on right */
+        .world-elevation-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 180px;
+            flex-shrink: 0;
+        }
+
         /* World Record Card */
         .world-record-card {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 14px;
             padding: 16px 18px;
-            margin-top: 16px;
-            text-align: center;
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.08);
+            flex-shrink: 0;
         }
         .world-record-card .wr-label {
             font-size: 10px;
@@ -778,7 +798,7 @@
             font-family: var(--font-body);
         }
         .world-record-card .wr-time {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 900;
             color: #fff;
             font-family: var(--font-mono);
@@ -800,6 +820,32 @@
             font-size: 11px;
             color: rgba(255,255,255,0.4);
             margin-top: 4px;
+        }
+
+        /* Elevation Chart */
+        .elevation-chart-card {
+            background: linear-gradient(135deg, #0d2616 0%, #0a1f10 100%);
+            border: 1px solid rgba(124, 181, 24, 0.25);
+            border-radius: 14px;
+            padding: 12px 14px;
+            flex-shrink: 0;
+        }
+        .elevation-chart-title {
+            font-size: 9px;
+            color: #7cb518;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-family: var(--font-body);
+        }
+        .elevation-chart-svg { width: 100%; height: 80px; }
+        .elevation-chart-svg polyline {
+            fill: none;
+            stroke: #7cb518;
+            stroke-width: 1.5;
+        }
+        .elevation-chart-svg .elevation-fill {
+            fill: rgba(124, 181, 24, 0.15);
         }
 
         /* Full 42km table toggle */
@@ -1428,16 +1474,26 @@
 
                 <div class="bracelet-preview" id="braceletPreview">
                     <div class="bracelet-preview-title">全馬配速手環</div>
-                    <div class="bracelet" id="braceletContent"></div>
-                    <div class="world-record-card" id="worldRecordCard">
-                        <div class="wr-label">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffd700" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            世界紀錄
+                    <div class="bracelet-preview-body">
+                        <div class="bracelet-section">
+                            <div class="bracelet" id="braceletContent"></div>
                         </div>
-                        <div class="wr-time">2:01:09</div>
-                        <div class="wr-athlete">Eliud Kipchoge</div>
-                        <div class="wr-pace">2:52/km</div>
-                        <div class="wr-event">2022 Berlin Marathon</div>
+                        <div class="world-elevation-col">
+                            <div class="world-record-card" id="worldRecordCard">
+                                <div class="wr-label">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffd700" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    世界紀錄
+                                </div>
+                                <div class="wr-time">2:01:09</div>
+                                <div class="wr-athlete">Eliud Kipchoge</div>
+                                <div class="wr-pace">2:52/km</div>
+                                <div class="wr-event">2022 Berlin Marathon</div>
+                            </div>
+                            <div class="elevation-chart-card" id="elevationChartCard">
+                                <div class="elevation-chart-title">🏔️ 海拔剖面圖</div>
+                                <svg class="elevation-chart-svg" id="elevationChartSvg" viewBox="0 0 160 80" preserveAspectRatio="none"></svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1628,6 +1684,33 @@
             return Math.max(0, curr - prev);
         }
 
+        function drawElevationChart() {
+            const svg = document.getElementById('elevationChartSvg');
+            if (!svg) return;
+            const W = 160, H = 80, PAD = 4;
+            const pts = [];
+            for (let km = 0; km <= 42; km += 0.5) {
+                pts.push({ km, elev: getMarathonElevation(km) });
+            }
+            const minE = Math.min(...pts.map(p => p.elev));
+            const maxE = Math.max(...pts.map(p => p.elev));
+            const range = maxE - minE || 1;
+            const x = (km) => PAD + (km / 42) * (W - PAD * 2);
+            const y = (elev) => H - PAD - ((elev - minE) / range) * (H - PAD * 2);
+
+            let pathD = `M ${x(pts[0].km)} ${y(pts[0].elev)}`;
+            for (let i = 1; i < pts.length; i++) {
+                pathD += ` L ${x(pts[i].km)} ${y(pts[i].elev)}`;
+            }
+            // Close for fill
+            let fillD = pathD + ` L ${x(42)} ${H} L ${x(0)} ${H} Z`;
+
+            svg.innerHTML = `
+                <path class="elevation-fill" d="${fillD}"/>
+                <polyline points="${pts.map(p => `${x(p.km)},${y(p.elev)}`).join(' ')}"/>
+            `;
+        }
+
         function toggleFullTable() {
             const el = document.getElementById('fullPaceTable');
             const btn = document.getElementById('fullTableBtn');
@@ -1761,6 +1844,7 @@
             document.getElementById('resultTitle').textContent =
                 `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
             document.getElementById('braceletContent').innerHTML = braceletHTML;
+            drawElevationChart();
             // Rebuild table with elevation column
             let tableHTML2 = '<thead><tr><th>公里</th><th>配速</th><th>累積時間</th><th>海拔(m)</th><th>階段說明</th></tr></thead><tbody>';
             paceProfile.forEach(item => {
