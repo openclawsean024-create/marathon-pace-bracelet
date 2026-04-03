@@ -1594,7 +1594,11 @@
             if (!timeStr || typeof timeStr !== 'string') return 0;
             const parts = timeStr.split(':').map(p => parseInt(p) || 0);
             if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            // 馬拉松範圍 1:30:00 ~ 8:00:00；2段式如 "3:30" → 當作 "時:分"
+            if (parts.length === 2) {
+                if (parts[0] >= 3) return parts[0] * 3600 + parts[1] * 60; // H:MM → H:MM:00
+                return parts[0] * 60 + parts[1]; // 否則當作 MM:SS
+            }
             return 0;
         }
 
