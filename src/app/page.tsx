@@ -39,7 +39,7 @@ export default function HomePage() {
   const handleDownloadPDF = async () => {
     setIsGenerating(true);
     try {
-      await generateWristbandPDF();
+      await generateWristbandPDF({ targetTime, course, strategy, showElevation, showQR });
     } finally {
       setIsGenerating(false);
     }
