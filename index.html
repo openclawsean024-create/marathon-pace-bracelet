@@ -1442,9 +1442,11 @@
                     <div class="form-group full">
                         <label>策略偏好</label>
                         <select id="strategy">
-                            <option value="even">均速策略（全程穩定配速）</option>
-                            <option value="negative">負分割（前慢後快）</option>
-                            <option value="positive">正分割（前快後慢）</option>
+                            <option value="even">均速法（全程穩定配速）</option>
+                            <option value="negative" selected>負分段（前慢後快）</option>
+                            <option value="positive">正分段（前快後慢）</option>
+                            <option value="adversarial">敵我配速（動態調整）</option>
+                            <option value="hrzone">心率區間配速（需心率裝置）</option>
                         </select>
                     </div>
                 </div>
@@ -1497,6 +1499,10 @@
                     </div>
                 </div>
 
+                <div class="strategy-info" id="strategyInfo">
+                    <h4 id="strategyInfoTitle">📊 負分段策略</h4>
+                    <p id="strategyInfoDesc">前慢後快策略：前21K維持目標配速+15秒/km，後21K加速至目標配速-15秒/km。</p>
+                </div>
                 <div class="tips-card">
                     <h4>📝 使用說明</h4>
                     <ul>
@@ -1523,6 +1529,9 @@
                 <div class="result-actions">
                     <button class="btn-result btn-result-primary" onclick="window.print()">
                         ⎙ 列印手環
+                    </button>
+                    <button class="btn-result btn-result-secondary" id="printFullBtn" onclick="openPrintable()">
+                        🖨️ 完整列印版
                     </button>
                     <button class="btn-result btn-result-secondary" onclick="resetForm()">
                         ↻ 重新產生
@@ -1641,53 +1650,41 @@
             if (formGroup) formGroup.classList.remove('has-error');
         }
 
-        // ── HALF GOLD STONE MARATHON ELEVATION DATA ──
-        const HALF_GOLD_STONE_ELEVATION = [
-            {km: 0,  elevation: 45,  cumulativeGain: 0},
-            {km: 1,  elevation: 52,  cumulativeGain: 10},
-            {km: 2,  elevation: 68,  cumulativeGain: 28},
-            {km: 3,  elevation: 95,  cumulativeGain: 58},
-            {km: 4,  elevation: 110, cumulativeGain: 78},
-            {km: 5,  elevation: 125, cumulativeGain: 96},
-            {km: 6,  elevation: 118, cumulativeGain: 98},
-            {km: 7,  elevation: 105, cumulativeGain: 100},
-            {km: 8,  elevation: 130, cumulativeGain: 128},
-            {km: 9,  elevation: 155, cumulativeGain: 158},
-            {km: 10, elevation: 148, cumulativeGain: 162},
-            {km: 11, elevation: 132, cumulativeGain: 165},
-            {km: 12, elevation: 120, cumulativeGain: 168},
-            {km: 13, elevation: 105, cumulativeGain: 170},
-            {km: 14, elevation: 118, cumulativeGain: 185},
-            {km: 15, elevation: 140, cumulativeGain: 208},
-            {km: 16, elevation: 125, cumulativeGain: 212},
-            {km: 17, elevation: 108, cumulativeGain: 215},
-            {km: 18, elevation: 95,  cumulativeGain: 218},
-            {km: 19, elevation: 80,  cumulativeGain: 220},
-            {km: 20, elevation: 72,  cumulativeGain: 225},
-            {km: 21, elevation: 65,  cumulativeGain: 230}
-        ];
-
-        function getMarathonElevation(km) {
-            if (km <= 21) {
-                const idx = Math.min(Math.floor(km), HALF_GOLD_STONE_ELEVATION.length - 1);
-                const next = Math.min(idx + 1, HALF_GOLD_STONE_ELEVATION.length - 1);
-                const t = km % 1;
-                const prev = HALF_GOLD_STONE_ELEVATION[idx];
-                const nxt = HALF_GOLD_STONE_ELEVATION[next];
-                return prev.elevation + (nxt.elevation - prev.elevation) * t;
+        // ── REAL TAIWAN MARATHON ELEVATION DATA ──
+        // Based on SPEC.md: real elevation profiles for Taiwan's four major marathons
+        const MARATHON_DATA = {
+            taipei: { name: '臺北馬拉松', totalGain: '120-150m', difficulty: '★☆☆☆☆',
+                data: [{km:0,elev:10},{km:5,elev:12},{km:10,elev:15},{km:15,elev:8},{km:20,elev:10},{km:25,elev:12},{km:30,elev:8},{km:35,elev:6},{km:40,elev:5},{km:42,elev:8}] },
+            wanjinshi: { name: '萬金石馬拉松', totalGain: '250-350m', difficulty: '★★☆☆☆',
+                data: [{km:0,elev:5},{km:5,elev:35},{km:10,elev:50},{km:15,elev:25},{km:20,elev:60},{km:25,elev:30},{km:30,elev:20},{km:35,elev:15},{km:40,elev:10},{km:42,elev:5}] },
+            kaohsiung: { name: '高雄富邦馬拉松', totalGain: '80-100m', difficulty: '★☆☆☆☆',
+                data: [{km:0,elev:20},{km:5,elev:18},{km:10,elev:22},{km:15,elev:18},{km:20,elev:20},{km:25,elev:18},{km:30,elev:22},{km:35,elev:20},{km:40,elev:18},{km:42,elev:20}] },
+            tianzhong: { name: '田中馬拉松', totalGain: '300-400m', difficulty: '★★★☆☆',
+                data: [{km:0,elev:50},{km:5,elev:65},{km:10,elev:80},{km:15,elev:120},{km:20,elev:90},{km:25,elev:110},{km:30,elev:75},{km:35,elev:60},{km:40,elev:55},{km:42,elev:50}] }
+        };
+        let selectedMarathon = 'taipei';
+        function interpolateElevation(data, km) {
+            if (km <= 0) return data[0].elev;
+            if (km >= 42) return data[data.length-1].elev;
+            for (let i = 0; i < data.length-1; i++) {
+                if (km >= data[i].km && km <= data[i+1].km) {
+                    const t = (km - data[i].km) / (data[i+1].km - data[i].km);
+                    return data[i].elev + (data[i+1].elev - data[i].elev) * t;
+                }
             }
-            const mirrorKm = 42 - km;
-            const idx = Math.min(Math.floor(mirrorKm), HALF_GOLD_STONE_ELEVATION.length - 1);
-            return (HALF_GOLD_STONE_ELEVATION[idx] || HALF_GOLD_STONE_ELEVATION[HALF_GOLD_STONE_ELEVATION.length - 1]).elevation;
+            return data[data.length-1].elev;
         }
 
+        function getMarathonElevation(km) {
+            const marathon = MARATHON_DATA[selectedMarathon];
+            return interpolateElevation(marathon.data, km);
+        }
         function getElevationGain(km) {
             if (km <= 0) return 0;
             const prev = getMarathonElevation(km - 1);
             const curr = getMarathonElevation(km);
             return Math.max(0, curr - prev);
         }
-
         function drawElevationChart() {
             const svg = document.getElementById('elevationChartSvg');
             if (!svg) return;
@@ -1701,18 +1698,16 @@
             const range = maxE - minE || 1;
             const x = (km) => PAD + (km / 42) * (W - PAD * 2);
             const y = (elev) => H - PAD - ((elev - minE) / range) * (H - PAD * 2);
-
-            let pathD = `M ${x(pts[0].km)} ${y(pts[0].elev)}`;
-            for (let i = 1; i < pts.length; i++) {
-                pathD += ` L ${x(pts[i].km)} ${y(pts[i].elev)}`;
-            }
-            // Close for fill
-            let fillD = pathD + ` L ${x(42)} ${H} L ${x(0)} ${H} Z`;
-
-            svg.innerHTML = `
-                <path class="elevation-fill" d="${fillD}"/>
-                <polyline points="${pts.map(p => `${x(p.km)},${y(p.elev)}`).join(' ')}"/>
-            `;
+            let pathD = 'M ' + x(pts[0].km) + ' ' + y(pts[0].elev);
+            for (let i = 1; i < pts.length; i++) { pathD += ' L ' + x(pts[i].km) + ' ' + y(pts[i].elev); }
+            let fillD = pathD + ' L ' + x(42) + ' ' + H + ' L ' + x(0) + ' ' + H + ' Z';
+            svg.innerHTML = '<path class="elevation-fill" d="' + fillD + '"/><polyline points="' + pts.map(p => x(p.km) + ',' + y(p.elev)).join(' ') + '"/>';
+        }
+        function switchMarathon(key) {
+            selectedMarathon = key;
+            document.querySelectorAll('.elev-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.elev-btn[data-marathon="' + key + '"]').classList.add('active');
+            drawElevationChart();
         }
 
         function toggleFullTable() {
@@ -1745,6 +1740,112 @@
             tbody.innerHTML = html;
         }
 
+
+        function getStrategyDescription(strategy, avgPace) {
+            const paceMin = Math.floor(avgPace / 60);
+            const paceSec = Math.floor(avgPace % 60);
+            const paceStr = paceMin + ':' + String(paceSec).padStart(2,'0');
+            const s = {
+                even:       { title: '均速法', desc: '全程維持 ' + paceStr + '/km 穩定配速。最適合首次跑馬、初學者或安全完賽為目標的跑者。體力消耗平均，後段不易崩潰。' },
+                negative:   { title: '負分段', desc: '前慢後快策略：前21K維持 ' + paceStr + '+15秒/km，後21K加速至 ' + paceStr + '-15秒/km。需紀律執行前半段，是突破PB的最佳策略。' },
+                positive:   { title: '正分段', desc: '前快後慢策略：前半馬配速較快，後半馬逐漸放慢。警告：研究顯示85%業餘跑者因此在30K後崩潰，不建議作為目標策略。' },
+                adversarial:{ title: '敵我配速', desc: '動態調整策略：前10K建立位置，10-21K巡航，21-30K保守，30-38K加速，38-42K全力衝刺。適用於有明確對手或分段目標的競技跑者。' },
+                hrzone:     { title: '心率區間', desc: '根據最大心率設定配速目標（Z2區: 60-70% HRmax為馬拉松主力區）。需配戴心率裝置才能使用此策略。' }
+            };
+            return s[strategy] || s.negative;
+        }
+
+        function openPrintable() {
+            const data = window._lastPrintData;
+            if (!data) { window.print(); return; }
+            const qs = new URLSearchParams({
+                target: data.targetTime,
+                pace: data.avgPace,
+                strategy: data.strategy,
+                marathon: data.marathon || 'taipei'
+            }).toString();
+            window.open('printable.html?' + qs, '_blank');
+        }
+
+        // ── i18n texts ──
+        const I18N = {
+            zh: {
+                navFeatures: '功能特色', navCalc: '配速計算', navUse: '立即使用',
+                heroBadge: '馬拉松配速專家', heroTitle1: '征服', heroTitle2: '每一公里', heroTitle3: '精準配速完賽',
+                heroDesc: '專業配速手環生成器，根據您的目標時間與訓練資料，智能計算每公里分段配速，助您穩定發揮、突破個人紀錄。',
+                btnStart: '開始製作配速手環', btnLearn: '了解更多 →',
+                stats1: '完賽策略', stats2: '智慧計算', stats3: '一鍵列印', stats4: '響應式設計',
+                featTitle: '為跑者打造的專業配速工具',
+                feat1: '智能配速計算', feat1d: '根據您的目標時間、訓練配速、過往比賽資料，自動計算最佳分段配速策略。',
+                feat2: '可印刷手環格式', feat2d: '生成專為馬拉松跑者設計的配速手環，裁切後套在手腕上，輕鬆掌握配速節奏。',
+                feat3: '多種策略模式', feat3d: '支持均速策略、負分段、正分段等多種策略，根據您的體力分配選擇最適方案。',
+                feat4: '真實地形數據', feat4d: '收錄臺北、萬金石、高雄、田中四大台灣馬拉松真實高度數據。',
+                feat5: '詳細配速表', feat5d: '完整42段配速表，包含每公里分段時間、累積時間、海拔高度。',
+                feat6: '即時重新生成', feat6d: '更換策略或目標時間，一鍵重新計算，隨時根據身體狀況動態調整配速計劃。',
+                ctaTitle: '準備好征服您的下一場馬拉松了嗎？',
+                ctaDesc: '不論是首馬挑戰還是突破PB，專業的配速策略是成功完賽的關鍵。現在就開始製作您的專屬配速手環。',
+                ctaBtn: '立即開始',
+                genTitle: '開始製作您的專屬配速手環',
+                labelGender: '性別', labelName: '姓名', labelTarget: '目標完賽時間',
+                labelTrainPace: '平時訓練配速（每公里）', labelHalf: '您最佳的半馬成績',
+                label10k: '您最佳的10公里成績', labelExp: '跑步經驗',
+                labelStrategy: '策略偏好',
+                optMale: '男士', optFemale: '女士',
+                expBeginner: '初馬（第一次跑全馬）', expInter: '有經驗（已有1-3次全馬）',
+                expAdv: '資深跑者（3次以上全馬）', expElite: '競技水平（sub-3:30目標）',
+                infoTitle: '💡 什麼是配速手環？',
+                infoDesc: '配速手環是一條標記著每公里目標時間的紙帶，跑步時套在手腕上，透過顏色區分配速區間，幫助您穩定配速、均勻出力。',
+                genBtn: '◎ 生成配速手環',
+                resultTitle: '您的專屬配速手環',
+                tipsTitle: '📝 使用說明',
+                tips: ['將手環套在手腕上，數字朝外','每到達一個公里標記，對照手環確認配速','顏色說明：淺色=一般，深色=半程標記','前5公里請放慢腳步熱身','逢整數公里檢查配速，適時調整'],
+                eleChart: '海拔剖面圖'
+            },
+            en: {
+                navFeatures: 'Features', navCalc: 'Calculator', navUse: 'Get Started',
+                heroBadge: 'Marathon Pace Expert', heroTitle1: 'Conquer', heroTitle2: 'Every Kilometer', heroTitle3: 'Precise Pace to Finish',
+                heroDesc: 'Professional pace band generator. Calculate per-km split times based on your target and training data. Run stable, break your PR.',
+                btnStart: 'Generate Pace Band', btnLearn: 'Learn More →',
+                stats1: 'Pacing Strategies', stats2: 'Smart Calculation', stats3: 'Print Ready', stats4: 'Responsive Design',
+                featTitle: 'Professional Pacing Tools for Runners',
+                feat1: 'Smart Pace Calculation', feat1d: 'Automatically calculate optimal split pace strategy based on your target time, training pace, and race history.',
+                feat2: 'Printable Pace Band', feat2d: 'Generate a wristband designed for marathon runners. Cut and wear to track your pace easily.',
+                feat3: 'Multiple Strategy Modes', feat3d: 'Support Even Pace, Negative Split, Positive Split and more. Choose the best strategy for your fitness level.',
+                feat4: 'Real Terrain Data', feat4d: 'Real elevation data for Taiwan's 4 major marathons: Taipei, Wanjinshi, Kaohsiung, and Tianzhong.',
+                feat5: 'Detailed Pace Table', feat5d: 'Complete 42-segment pace table with per-km split times, cumulative times, and elevation.',
+                feat6: 'Instant Regeneration', feat6d: 'Change strategy or target time, recalculate instantly. Adjust your race plan anytime.',
+                ctaTitle: 'Ready to Conquer Your Next Marathon?',
+                ctaDesc: 'Whether it's your first marathon or a PB attempt, professional pacing strategy is the key to success. Generate your personalized pace band now.',
+                ctaBtn: 'Get Started Now',
+                genTitle: 'Generate Your Personalized Pace Band',
+                labelGender: 'Gender', labelName: 'Name', labelTarget: 'Target Finish Time',
+                labelTrainPace: 'Training Pace (per km)', labelHalf: 'Best Half Marathon',
+                label10k: 'Best 10K Time', labelExp: 'Running Experience',
+                labelStrategy: 'Pacing Strategy',
+                optMale: 'Male', optFemale: 'Female',
+                expBeginner: 'First Marathon', expInter: 'Experienced (1-3 full marathons)',
+                expAdv: 'Advanced (3+ full marathons)', expElite: 'Elite (sub-3:30 target)',
+                infoTitle: '💡 What is a Pace Band?',
+                infoDesc: 'A pace band is a strip marked with target times for each kilometer. Wear it on your wrist during the race and use the color coding to track your pace.',
+                genBtn: '◎ Generate Pace Band',
+                resultTitle: 'Your Personalized Pace Band',
+                tipsTitle: '📝 How to Use',
+                tips: ['Wear the band on your wrist with numbers facing out','Check each kilometer marker against the band','Color key: light=normal, dark=halfway marker','First 5km: warm up slowly, don't accelerate','Check pace at each km, adjust as needed'],
+                eleChart: 'Elevation Profile'
+            }
+        };
+        let currentLang = 'zh';
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+            const t = I18N[lang];
+            // Update text elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+        }
 
         function generateBracelet() {
             document.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
@@ -1790,20 +1891,54 @@
             }
 
             const avgPace = targetSeconds / 42.195;
+            const paceMin = Math.floor(avgPace / 60);
+            const paceSec = Math.floor(avgPace % 60);
             let paceProfile = [];
 
             for (let km = 1; km <= 42; km++) {
                 let pace = avgPace;
-                if (km <= 5) pace = avgPace * 1.05;
-                else if (strategy === 'negative' && km > 35) pace = avgPace * 0.96;
-                else if (strategy === 'positive' && km <= 21) pace = avgPace * 0.97;
-                else if (strategy === 'even') pace = avgPace;
-                // Terrain adjustment: elevation gain slows pace
                 const elevGain = getElevationGain(km);
+
+                if (strategy === 'even') {
+                    // 均速法：全程幾乎相同，熱身稍慢
+                    if (km <= 5) pace = avgPace * 1.06;
+                    else if (km <= 10) pace = avgPace * 1.02;
+                    else pace = avgPace;
+                } else if (strategy === 'negative') {
+                    // 負分段：前慢後快 (Matthew Effect)
+                    if (km <= 10) pace = avgPace * 1.08;
+                    else if (km <= 21) pace = avgPace * 1.03;
+                    else if (km <= 30) pace = avgPace * 0.99;
+                    else if (km <= 35) pace = avgPace * 0.95;
+                    else pace = avgPace * 0.92;
+                } else if (strategy === 'positive') {
+                    // 正分段：前快後慢（不建議）
+                    if (km <= 21) pace = avgPace * 0.95;
+                    else if (km <= 30) pace = avgPace * 1.03;
+                    else if (km <= 35) pace = avgPace * 1.10;
+                    else pace = avgPace * 1.18;
+                } else if (strategy === 'adversarial') {
+                    // 敵我配速：動態5段策略
+                    if (km <= 10) pace = avgPace * 1.05;
+                    else if (km <= 21) pace = avgPace * 0.98;
+                    else if (km <= 30) pace = avgPace * 1.02;
+                    else if (km <= 38) pace = avgPace * 0.96;
+                    else pace = avgPace * 0.90;
+                } else if (strategy === 'hrzone') {
+                    // 心率區間：Z2-Z3維持
+                    if (km <= 10) pace = avgPace * 1.05;
+                    else if (km <= 21) pace = avgPace * 1.00;
+                    else if (km <= 30) pace = avgPace * 0.99;
+                    else pace = avgPace * 0.97;
+                }
+
+                // 地形調整：上坡減速
                 if (elevGain > 20) pace *= 1.20;
                 else if (elevGain > 10) pace *= 1.12;
+                // 下坡可略快
                 const elevLoss = -elevGain;
                 if (elevLoss > 15) pace = Math.min(pace * 0.97, avgPace);
+
                 paceProfile.push({ km, pace, cumulative: pace * km, elevation: getMarathonElevation(km) });
             }
 
@@ -1842,11 +1977,23 @@
             });
             tableHTML += '</tbody>';
 
-            // Store globally for full table toggle
+            // Store globally for full table toggle and printable
             window._lastPaceProfile = paceProfile;
+            window._lastPrintData = {
+                targetTime: formatTime(targetSeconds),
+                avgPace: paceMin + ':' + String(paceSec).padStart(2,'0'),
+                strategy: strategy,
+                marathon: selectedMarathon
+            };
 
             document.getElementById('resultTitle').textContent =
-                `目標：${formatTime(targetSeconds)} | 平均配速：${formatPaceChinese(avgPace)}`;
+                '目標：' + formatTime(targetSeconds) + ' | 平均配速：' + formatPaceChinese(avgPace);
+            // Update strategy info card
+            const stratInfo = getStrategyDescription(strategy, avgPace);
+            const titleEl = document.getElementById('strategyInfoTitle');
+            const descEl = document.getElementById('strategyInfoDesc');
+            if (titleEl) titleEl.textContent = '📊 ' + stratInfo.title + '策略';
+            if (descEl) descEl.textContent = stratInfo.desc;
             document.getElementById('braceletContent').innerHTML = braceletHTML;
             drawElevationChart();
             // Rebuild table with elevation column

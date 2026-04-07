@@ -2,220 +2,230 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>全馬配速手環 — 跑步訓練助手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全馬配速手環 — 列印版</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Roboto+Mono:wght@500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Roboto Mono', 'Noto Sans TC', monospace;
-            background: #fff;
-            color: #000;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .bracelet-container {
-            max-width: 400px;
-            margin: 0 auto;
-            border: 3px solid #000;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .bracelet-header {
-            background: #000;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .bracelet-header h1 {
-            font-size: 1.4em;
-            margin-bottom: 5px;
-        }
-        
-        .bracelet-header p {
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
-        
-        .bracelet-row {
-            display: flex;
-            border-bottom: 1px solid #ccc;
-            font-size: 12px;
-        }
-        
-        .bracelet-row:nth-child(even) {
-            background: #f9f9f9;
-        }
-        
-        .km-label {
-            width: 70px;
-            padding: 8px;
-            font-weight: 700;
-            border-right: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            background: #eee;
-        }
-        
-        .time-display {
-            flex: 1;
-            padding: 8px;
-            text-align: center;
-        }
-        
-        .time-display .cumulative {
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-        
-        .time-display .pace {
-            font-size: 0.75em;
-            color: #666;
-        }
-        
-        .bracelet-row.half {
-            background: #ffeb3b !important;
-        }
-        
-        .bracelet-row.finish {
-            background: #4caf50 !important;
-            color: #fff;
-        }
-        
-        .bracelet-row.finish .km-label {
-            background: #388e3c;
-            color: #fff;
-        }
-        
-        .bracelet-row.highlight {
-            background: #e3f2fd;
-        }
-        
-        .bracelet-row.highlight .km-label {
-            background: #1976d2;
-            color: #fff;
-        }
-        
-        .bracelet-footer {
-            background: #f5f5f5;
-            padding: 10px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-        }
-        
+        body { font-family: 'JetBrains Mono', 'Noto Sans TC', monospace; background: #fff; color: #000; padding: 20px; }
+        .print-workspace { max-width: 380px; margin: 0 auto; }
+
+        /* ── BRACELET HEADER ── */
+        .bracelet-header { background: #000; color: #fff; padding: 16px 20px; text-align: center; border-radius: 12px 12px 0 0; position: relative; overflow: hidden; }
+        .bracelet-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, #ff6b35 0%, #ff7a3d 50%, #7cb518 100%); opacity: 0.15; }
+        .bracelet-header > * { position: relative; }
+        .bracelet-header h1 { font-size: 1.3em; margin-bottom: 4px; letter-spacing: -0.5px; }
+        .bracelet-header .meta { font-size: 0.75em; opacity: 0.8; }
+
+        /* ── MARATHON INFO ── */
+        .marathon-info { background: #f5f5f5; border: 1px solid #e0e0e0; border-top: none; padding: 10px 16px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+        .marathon-info .name { font-weight: 700; color: #333; }
+        .marathon-info .difficulty { color: #ff6b35; font-weight: 700; }
+        .marathon-info .gain { color: #666; }
+
+        /* ── STRATEGY BANNER ── */
+        .strategy-banner { background: linear-gradient(90deg, #ff6b35, #ff7a3d); color: #fff; padding: 8px 16px; font-size: 11px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
+
+        /* ── BRACELET ROWS ── */
+        .bracelet-rows { border: 2px solid #000; border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
+        .bracelet-row { display: flex; border-bottom: 1px solid #ccc; font-size: 12px; page-break-inside: avoid; }
+        .bracelet-row:last-child { border-bottom: none; }
+        .bracelet-row:nth-child(even) { background: #fafafa; }
+        .bracelet-row.half { background: #fff8e1 !important; }
+        .bracelet-row.checkpoint { background: #e8f5e9 !important; }
+        .bracelet-row.finish { background: #1a1a2e !important; color: #fff; }
+
+        .km-label { width: 72px; padding: 9px 10px; font-weight: 700; border-right: 1px solid #ccc; display: flex; flex-direction: column; justify-content: center; background: #f0f0f0; font-size: 11px; }
+        .bracelet-row.half .km-label { background: #ffe082; color: #333; }
+        .bracelet-row.checkpoint .km-label { background: #c8e6c9; color: #1b5e20; }
+        .bracelet-row.finish .km-label { background: #1a237e; color: #fff; }
+        .km-label .sub { font-size: 9px; font-weight: 400; color: #666; margin-top: 1px; }
+        .bracelet-row.half .km-label .sub, .bracelet-row.checkpoint .km-label .sub, .bracelet-row.finish .km-label .sub { color: inherit; opacity: 0.7; }
+
+        .time-display { flex: 1; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; }
+        .cumulative { font-weight: 700; font-size: 1.1em; }
+        .pace-note { font-size: 10px; color: #888; text-align: right; }
+        .bracelet-row.finish .pace-note { color: rgba(255,255,255,0.6); }
+
+        /* ── LEGEND ── */
+        .legend { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: #666; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        .legend-dot.half { background: #ffe082; border: 1px solid #ffc107; }
+        .legend-dot.checkpoint { background: #c8e6c9; border: 1px solid #4caf50; }
+        .legend-dot.finish { background: #1a237e; }
+
+        /* ── NOTES ── */
+        .notes { margin-top: 16px; padding: 12px; background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 10px; color: #555; }
+        .notes h4 { font-size: 11px; margin-bottom: 6px; color: #333; }
+        .notes ul { padding-left: 16px; line-height: 1.7; }
+
+        /* ── QR SECTION ── */
+        .qr-section { margin-top: 16px; text-align: center; font-size: 9px; color: #999; }
+        .qr-placeholder { width: 60px; height: 60px; border: 1px solid #ddd; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #bbb; }
+
+        /* ── PRINT CONTROLS ── */
+        .print-controls { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 100; }
+        .print-btn { background: #000; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        .print-btn:hover { background: #333; }
+
+        /* ── FULL 42K TABLE ── */
+        .full-table-section { margin-top: 24px; }
+        .full-table-section h3 { font-size: 13px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #000; }
+        .full-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        .full-table th, .full-table td { padding: 5px 6px; text-align: center; border: 1px solid #ccc; }
+        .full-table th { background: #f0f0f0; font-weight: 700; }
+        .full-table tr.half-row td { background: #fff8e1; }
+        .full-table tr.finish-row td { background: #1a1a2e; color: #fff; }
+
         @media print {
-            body {
-                padding: 0;
-            }
-            
-            .bracelet-container {
-                border: 2px solid #000;
-                max-width: 100%;
-                width: 350px;
-            }
-            
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            body { padding: 0; }
+            .print-controls { display: none; }
+            .bracelet-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .strategy-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bracelet-row.half { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bracelet-row.finish { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .full-table-section { page-break-before: always; }
+            .print-workspace { max-width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="bracelet-container">
+
+<div class="print-workspace">
+    <!-- Dynamically populated by JS -->
+    <div id="braceletContent"></div>
+</div>
+
+<div class="print-controls">
+    <button class="print-btn" onclick="window.print()">⎙ 列印手環</button>
+</div>
+
+<script>
+// Parse URL params
+const params = new URLSearchParams(window.location.search);
+
+// Default data (can be overridden by URL params)
+const DEFAULT_DATA = {
+    targetTime: '4:00:00',
+    avgPace: '5:41',
+    strategy: 'negative',
+    marathon: 'taipei',
+    rows: [
+        {km:1, label:'起點', cumulative:'0:00:00', pace:'5:41/km', type:''},
+        {km:5, label:'5km', cumulative:'0:28:25', pace:'5:41/km', type:'checkpoint'},
+        {km:10, label:'10km', cumulative:'0:56:50', pace:'5:41/km', type:'checkpoint'},
+        {km:15, label:'15km', cumulative:'1:25:15', pace:'5:41/km', type:'checkpoint'},
+        {km:21, label:'半程', cumulative:'1:59:31', pace:'5:41/km', type:'half'},
+        {km:25, label:'25km', cumulative:'2:22:35', pace:'5:41/km', type:'checkpoint'},
+        {km:30, label:'30km', cumulative:'2:50:30', pace:'5:41/km', type:'checkpoint'},
+        {km:35, label:'35km', cumulative:'3:18:25', pace:'5:41/km', type:'checkpoint'},
+        {km:40, label:'40km', cumulative:'3:46:20', pace:'5:41/km', type:'checkpoint'},
+        {km:42.195, label:'終點', cumulative:'4:00:00', pace:'5:41/km', type:'finish'}
+    ]
+};
+
+const MARATHON_NAMES = {
+    taipei: { name: '臺北馬拉松', gain: '爬升 120-150m', diff: '★★☆☆☆' },
+    wanjinshi: { name: '萬金石馬拉松', gain: '爬升 250-350m', diff: '★★★☆☆' },
+    kaohsiung: { name: '高雄富邦馬拉松', gain: '爬升 80-100m', diff: '★☆☆☆☆' },
+    tianzhong: { name: '田中馬拉松', gain: '爬升 300-400m', diff: '★★★☆☆' }
+};
+
+const STRATEGY_NAMES = {
+    even: '均速法',
+    negative: '負分段',
+    positive: '正分段',
+    adversarial: '敵我配速',
+    hrzone: '心率區間'
+};
+
+const STRATEGY_COLORS = {
+    even: '#666',
+    negative: '#ff6b35',
+    positive: '#e53935',
+    adversarial: '#1a237e',
+    hrzone: '#2e7d32'
+};
+
+function buildBracelet() {
+    const marathonKey = params.get('marathon') || 'taipei';
+    const strategy = params.get('strategy') || 'negative';
+    const targetTime = params.get('target') || DEFAULT_DATA.targetTime;
+    const avgPace = params.get('pace') || DEFAULT_DATA.avgPace;
+    const marathon = MARATHON_NAMES[marathonKey] || MARATHON_NAMES.taipei;
+    const stratColor = STRATEGY_COLORS[strategy] || '#ff6b35';
+    const stratName = STRATEGY_NAMES[strategy] || '負分段';
+
+    let rowsHtml = '';
+    DEFAULT_DATA.rows.forEach(function(r) {
+        const typeClass = r.type ? ' ' + r.type : '';
+        rowsHtml += '<div class="bracelet-row' + typeClass + '">' +
+            '<div class="km-label">' + r.label + '<span class="sub">' + r.km + 'km</span></div>' +
+            '<div class="time-display">' +
+                '<span class="cumulative">' + r.cumulative + '</span>' +
+                '<span class="pace-note">' + r.pace + '</span>' +
+            '</div>' +
+        '</div>';
+    });
+
+    // Full 42k table
+    let fullTableHtml = '<div class="full-table-section"><h3>📋 完整分段表（42.195km）</h3><table class="full-table"><thead><tr><th>km</th><th>配速</th><th>累積</th><th>說明</th></tr></thead><tbody>';
+    const notes = {1:'起點',5:'檢查點',10:'檢查點',15:'檢查點',21:'半程',25:'檢查點',30:'突破點',35:'最後衝刺',40:'即將完賽',42.195:'完賽'};
+    const highlights = {21:'half-row', 42.195:'finish-row'};
+    for (let km = 1; km <= 42; km++) {
+        const note = notes[km] || (km % 5 === 0 ? '檢查點' : '');
+        const rowClass = highlights[km] || (km % 2 === 0 ? '' : '');
+        const paceMin = Math.floor(parseInt(avgPace.split(':')[0]));
+        const paceSec = parseInt(avgPace.split(':')[1]) || 0;
+        const totalSec = km * (paceMin * 60 + paceSec);
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const cumStr = h > 0 ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') : m + ':' + String(s).padStart(2,'0');
+        fullTableHtml += '<tr class="' + rowClass + '"><td>' + km + '</td><td>' + avgPace + '/km</td><td>' + cumStr + '</td><td>' + note + '</td></tr>';
+    }
+    fullTableHtml += '</tbody></table></div>';
+
+    document.getElementById('braceletContent').innerHTML = `
         <div class="bracelet-header">
             <h1>🏃 全馬配速手環</h1>
-            <p>目標時間：4:00:00 | 平均配速 5:41/km</p>
+            <div class="meta">目標 ${targetTime} · 平均 ${avgPace}/km</div>
         </div>
-        
-        <div class="bracelet-row">
-            <div class="km-label">起點</div>
-            <div class="time-display">
-                <div class="cumulative">0:00:00</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="marathon-info">
+            <span class="name">${marathon.name}</span>
+            <span class="gain">${marathon.gain}</span>
+            <span class="difficulty">${marathon.diff}</span>
         </div>
-        
-        <div class="bracelet-row highlight">
-            <div class="km-label">5km</div>
-            <div class="time-display">
-                <div class="cumulative">0:28:25</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="strategy-banner" style="background: ${stratColor}">
+            策略：${stratName}
         </div>
-        
-        <div class="bracelet-row">
-            <div class="km-label">10km</div>
-            <div class="time-display">
-                <div class="cumulative">0:56:50</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="bracelet-rows">
+            ${rowsHtml}
         </div>
-        
-        <div class="bracelet-row highlight">
-            <div class="km-label">15km</div>
-            <div class="time-display">
-                <div class="cumulative">1:25:15</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot half"></div>半程 21km</div>
+            <div class="legend-item"><div class="legend-dot checkpoint"></div>檢查點</div>
+            <div class="legend-item"><div class="legend-dot finish"></div>終點</div>
         </div>
-        
-        <div class="bracelet-row highlight">
-            <div class="km-label">21km</div>
-            <div class="time-display">
-                <div class="cumulative">1:59:31</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="notes">
+            <h4>⚡ 配速提醒</h4>
+            <ul>
+                <li>前 5 公里：熱身期，刻意压慢，不要急於加速</li>
+                <li>10-30 公里：巡航期，保持穩定節奏</li>
+                <li>30-38 公里：維持配速，不要被其他跑者帶乱节奏</li>
+                <li>38-42 公里：全力衝刺，燃燒所有剩餘體力</li>
+            </ul>
         </div>
-        
-        <div class="bracelet-row">
-            <div class="km-label">25km</div>
-            <div class="time-display">
-                <div class="cumulative">2:22:35</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
+        <div class="qr-section">
+            <div class="qr-placeholder">QR</div>
+            掃描上方QR Code可開啟網頁版
         </div>
-        
-        <div class="bracelet-row highlight">
-            <div class="km-label">30km</div>
-            <div class="time-display">
-                <div class="cumulative">2:50:30</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
-        </div>
-        
-        <div class="bracelet-row">
-            <div class="km-label">35km</div>
-            <div class="time-display">
-                <div class="cumulative">3:18:25</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
-        </div>
-        
-        <div class="bracelet-row highlight">
-            <div class="km-label">40km</div>
-            <div class="time-display">
-                <div class="cumulative">3:46:20</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
-        </div>
-        
-        <div class="bracelet-row finish">
-            <div class="km-label">🏆 終點</div>
-            <div class="time-display">
-                <div class="cumulative">4:00:00</div>
-                <div class="pace">@ 5:41/km</div>
-            </div>
-        </div>
-        
-        <div class="bracelet-footer">
-            前5公里熱身 | 25-30公里維持 | 最後衝刺
-        </div>
-    </div>
+        ${fullTableHtml}
+    `;
+}
+
+buildBracelet();
+</script>
 </body>
 </html>
