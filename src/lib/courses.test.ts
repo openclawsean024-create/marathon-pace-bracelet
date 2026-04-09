@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { COURSES } from './courses';
 
 describe('COURSES', () => {
-  it('should contain 4 courses', () => {
+  it('should contain 8 courses (4 full + 2 half + 2 10K)', () => {
     const ids = Object.keys(COURSES);
-    expect(ids).toHaveLength(4);
+    expect(ids).toHaveLength(8);
   });
 
   it('should have courses with correct IDs', () => {
@@ -44,11 +44,21 @@ describe('COURSES', () => {
     expect(COURSES.penghu.totalDMinus).toBe(280);
   });
 
-  it('should have correct number of elevation nodes', () => {
+  it('should have correct number of elevation nodes for full marathon courses', () => {
     expect(COURSES.taipei.elevationNodes).toHaveLength(10);
     expect(COURSES.taichung.elevationNodes).toHaveLength(7);
     expect(COURSES.yilan.elevationNodes).toHaveLength(7);
     expect(COURSES.penghu.elevationNodes).toHaveLength(9);
+  });
+
+  it('should have half marathon and 10K courses with valid data', () => {
+    expect(COURSES['taipei-half'].totalKm).toBeCloseTo(21.0975);
+    expect(COURSES['taichung-half'].totalKm).toBeCloseTo(21.0975);
+    expect(COURSES['taipei-10k'].totalKm).toBe(10);
+    expect(COURSES['yilan-10k'].totalKm).toBe(10);
+    // Half/10K courses should have fewer elevation nodes
+    expect(COURSES['taipei-half'].elevationNodes.length).toBeGreaterThan(0);
+    expect(COURSES['taipei-10k'].elevationNodes.length).toBeGreaterThan(0);
   });
 
   it('should have CourseNode with km and elevation', () => {

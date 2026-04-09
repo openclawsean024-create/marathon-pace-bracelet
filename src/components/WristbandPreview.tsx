@@ -1,71 +1,46 @@
-import { Course, PaceStrategy } from '@/lib/courses';
-import { PaceSegment } from '@/lib/types';
+'use client';
 
-interface WristbandPreviewProps {
-  segments: PaceSegment[];
+import type { Course, PaceStrategy } from '@/lib/courses';
+import { calculateSegments, getTargetPace } from '@/lib/pace-engine';
+
+export function WristbandPreview({
+  segments,
+  course,
+  targetTime,
+  strategy,
+}: {
+  segments: ReturnType<typeof calculateSegments>;
   course: Course;
   targetTime: string;
   strategy: PaceStrategy;
-}
-
-const KM_LABELS = ['5K', '10K', '15K', '半程', '25K', '30K', '35K', '40K', '42.2K'];
-
-const STRATEGY_LABELS: Record<PaceStrategy, string> = {
-  'negative-split': '負分段',
-  'even-pace': '均速配速',
-  'safe-start': '保守起步',
-};
-
-export function WristbandPreview({ segments, course, targetTime, strategy }: WristbandPreviewProps) {
+}) {
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-white">📖 預覽</h2>
-      <p className="text-slate-400 text-sm">即時預覽 · 最終品質以 PDF 為準</p>
+    <section className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-xl font-bold text-slate-900">即時預覽</h3>
+          <p className="text-sm text-slate-500">{course.name} · {targetTime} · {strategy}</p>
+        </div>
+        <div className="text-right">
+          <div className="text-xs text-slate-500">平均配速</div>
+          <div className="font-bold text-slate-900">{getTargetPace(targetTime, course)}</div>
+        </div>
+      </div>
 
-      {/* Wristband preview */}
-      <div className="overflow-x-auto">
-        <div
-          className="flex min-w-[600px] rounded-2xl overflow-hidden"
-          style={{ backgroundColor: '#1a1a2e' }}
-        >
-          {segments.map((seg, i) => (
-            <div
-              key={seg.km}
-              className="flex-1 flex flex-col items-center justify-center py-4 px-1 border-r border-white/10 last:border-r-0"
-            >
-              <span className="text-white/50 text-xs mb-1">{KM_LABELS[i]}</span>
-              <span className="text-white font-bold text-sm">{seg.km}K</span>
-              <span className="text-white/80 text-xs mt-1">{seg.pace}</span>
-              <span className="text-white/60 text-xs">{seg.cumulativeTime}</span>
-              {seg.note && (
-                <span
-                  className="text-xs mt-1"
-                  style={{ color: 'var(--color-accent)' }}
-                >
-                  {seg.note}
-                </span>
-              )}
-            </div>
-          ))}
-          {/* Strategy column */}
-          <div className="flex-1 flex flex-col items-center justify-center py-4 px-2 border-l border-white/10">
-            <span className="text-white/50 text-xs mb-1">策略</span>
-            <span className="text-white font-bold text-sm text-center">
-              {STRATEGY_LABELS[strategy]}
-            </span>
-            <span className="text-white/60 text-xs mt-1">目標</span>
-            <span className="text-white/80 text-xs">{targetTime}</span>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+        {segments.map((segment) => (
+          <div key={segment.km} className="rounded-xl border border-slate-200 p-3 bg-slate-50">
+            <div className="font-bold text-slate-800">{segment.km === 21.0975 ? '半程' : `${segment.km}K`}</div>
+            <div className="text-slate-600">+{segment.cumulativeTime}</div>
+            <div className="text-slate-900 font-semibold">{segment.pace}</div>
+            <div className="text-slate-500">{segment.note ?? ''}</div>
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* Course info */}
-      <div className="bg-white/10 rounded-xl p-4 text-white text-sm">
-        <div className="font-bold">{course.name}</div>
-        <div className="text-white/60 mt-1">
-          D+ {course.totalDPlus}m · {course.totalKm}K
-        </div>
+      <div className="mt-4 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+        背面補給提醒：每 5K 補水，30K 後補充能量膠。
       </div>
-    </div>
+    </section>
   );
 }

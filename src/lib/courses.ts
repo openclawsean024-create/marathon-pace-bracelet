@@ -2,7 +2,7 @@ export type PaceStrategy = 'negative-split' | 'even-pace' | 'safe-start';
 
 export interface CourseNode {
   km: number;
-  elevation: number; // meters
+  elevation: number;
   label?: string;
 }
 
