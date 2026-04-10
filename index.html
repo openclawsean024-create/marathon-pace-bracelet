@@ -1449,6 +1449,22 @@
                             <option value="hrzone">心率區間配速（需心率裝置）</option>
                         </select>
                     </div>
+
+                    <div class="form-group" id="hrMaxGroup" style="display:none;">
+                        <label>最大心率（HRmax）<span class="label-optional">（用於心率區間策略）</span></label>
+                        <input type="number" id="hrMax" placeholder="例如：185" min="120" max="220">
+                        <div class="hint">一般預估：220 - 年齡，或使用運動測試實際數值</div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>選擇賽事（用於海拔剖面圖）</label>
+                        <select id="marathonSelect">
+                            <option value="taipei">臺北馬拉松（爬升 120-150m，★★☆☆☆）</option>
+                            <option value="wanjinshi">萬金石馬拉松（爬升 250-350m，★★★☆☆）</option>
+                            <option value="kaohsiung">高雄富邦馬拉松（爬升 80-100m，★☆☆☆☆）</option>
+                            <option value="tianzhong">田中馬拉松（爬升 300-400m，★★★☆☆）</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="info-box">
@@ -1750,7 +1766,7 @@
                 negative:   { title: '負分段', desc: '前慢後快策略：前21K維持 ' + paceStr + '+15秒/km，後21K加速至 ' + paceStr + '-15秒/km。需紀律執行前半段，是突破PB的最佳策略。' },
                 positive:   { title: '正分段', desc: '前快後慢策略：前半馬配速較快，後半馬逐漸放慢。警告：研究顯示85%業餘跑者因此在30K後崩潰，不建議作為目標策略。' },
                 adversarial:{ title: '敵我配速', desc: '動態調整策略：前10K建立位置，10-21K巡航，21-30K保守，30-38K加速，38-42K全力衝刺。適用於有明確對手或分段目標的競技跑者。' },
-                hrzone:     { title: '心率區間', desc: '根據最大心率設定配速目標（Z2區: 60-70% HRmax為馬拉松主力區）。需配戴心率裝置才能使用此策略。' }
+                hrzone:     { title: '心率區間', desc: 'Z2區(60-70% HRmax)馬拉松主力配速，Z3區(70-80%)临界配速，需配戴心率裝置。' }
             };
             return s[strategy] || s.negative;
         }
@@ -1811,11 +1827,11 @@
                 feat1: 'Smart Pace Calculation', feat1d: 'Automatically calculate optimal split pace strategy based on your target time, training pace, and race history.',
                 feat2: 'Printable Pace Band', feat2d: 'Generate a wristband designed for marathon runners. Cut and wear to track your pace easily.',
                 feat3: 'Multiple Strategy Modes', feat3d: 'Support Even Pace, Negative Split, Positive Split and more. Choose the best strategy for your fitness level.',
-                feat4: 'Real Terrain Data', feat4d: 'Real elevation data for Taiwan's 4 major marathons: Taipei, Wanjinshi, Kaohsiung, and Tianzhong.',
+                feat4: 'Real Terrain Data', feat4d: 'Real elevation data for Taiwan 4 major marathons: Taipei, Wanjinshi, Kaohsiung, and Tianzhong.',
                 feat5: 'Detailed Pace Table', feat5d: 'Complete 42-segment pace table with per-km split times, cumulative times, and elevation.',
                 feat6: 'Instant Regeneration', feat6d: 'Change strategy or target time, recalculate instantly. Adjust your race plan anytime.',
                 ctaTitle: 'Ready to Conquer Your Next Marathon?',
-                ctaDesc: 'Whether it's your first marathon or a PB attempt, professional pacing strategy is the key to success. Generate your personalized pace band now.',
+                ctaDesc: "Whether it is your first marathon or a PB attempt, professional pacing strategy is the key to success. Generate your personalized pace band now.",
                 ctaBtn: 'Get Started Now',
                 genTitle: 'Generate Your Personalized Pace Band',
                 labelGender: 'Gender', labelName: 'Name', labelTarget: 'Target Finish Time',
@@ -1830,7 +1846,7 @@
                 genBtn: '◎ Generate Pace Band',
                 resultTitle: 'Your Personalized Pace Band',
                 tipsTitle: '📝 How to Use',
-                tips: ['Wear the band on your wrist with numbers facing out','Check each kilometer marker against the band','Color key: light=normal, dark=halfway marker','First 5km: warm up slowly, don't accelerate','Check pace at each km, adjust as needed'],
+                tips: ['Wear the band on your wrist with numbers facing out','Check each kilometer marker against the band','Color key: light=normal, dark=halfway marker','First 5km: warm up slowly, do not accelerate','Check pace at each km, adjust as needed'],
                 eleChart: 'Elevation Profile'
             }
         };
@@ -1874,6 +1890,9 @@
             } else {
                 sizeBox.classList.remove('show');
             }
+
+            const marathonSelect = document.getElementById('marathonSelect');
+            if (marathonSelect) selectedMarathon = marathonSelect.value;
 
             let targetSeconds = 0;
             if (targetTime === 'custom') targetSeconds = parseTime(customTime);
@@ -1925,11 +1944,11 @@
                     else if (km <= 38) pace = avgPace * 0.96;
                     else pace = avgPace * 0.90;
                 } else if (strategy === 'hrzone') {
-                    // 心率區間：Z2-Z3維持
-                    if (km <= 10) pace = avgPace * 1.05;
-                    else if (km <= 21) pace = avgPace * 1.00;
-                    else if (km <= 30) pace = avgPace * 0.99;
-                    else pace = avgPace * 0.97;
+                    // 心率區間：根據最大心率設定 Z2-Z3 區間配速
+                    if (km <= 10) pace = avgPace * 1.10; // Z2 热身
+                    else if (km <= 21) pace = avgPace * 1.03; // Z2 巡航
+                    else if (km <= 30) pace = avgPace * 0.99; // Z3 临界
+                    else pace = avgPace * 0.95; // Z3-Z4 全力
                 }
 
                 // 地形調整：上坡減速
@@ -1939,7 +1958,11 @@
                 const elevLoss = -elevGain;
                 if (elevLoss > 15) pace = Math.min(pace * 0.97, avgPace);
 
-                paceProfile.push({ km, pace, cumulative: pace * km, elevation: getMarathonElevation(km) });
+                const item = { km, pace, cumulative: pace * km, elevation: getMarathonElevation(km) };
+                if (strategy === 'hrzone') {
+                    item.hrZone = km <= 10 ? 'Z2' : km <= 30 ? 'Z2-Z3' : 'Z3-Z4';
+                }
+                paceProfile.push(item);
             }
 
             paceProfile.push({ km: 42.195, pace: avgPace, cumulative: targetSeconds, isFinish: true, elevation: getMarathonElevation(42) });
@@ -2001,7 +2024,8 @@
             paceProfile.forEach(item => {
                 const note = notes[item.km] || (item.km % 5 === 0 ? '— 檢查點' : '');
                 const hl = highlights.includes(item.km);
-                tableHTML2 += '<tr class="' + (hl ? 'highlight' : '') + '"><td>' + (item.isFinish ? '42.195 公里' : item.km + ' 公里') + '</td><td>' + formatPaceChinese(item.pace) + '</td><td>' + formatTime(item.cumulative) + '</td><td>' + (item.elevation ? item.elevation.toFixed(0) + 'm' : '') + '</td><td>' + note + '</td></tr>';
+                const hrBadge = item.hrZone ? ' <span style="color:#7cb518;font-size:11px;font-weight:700;">' + item.hrZone + '</span>' : '';
+                tableHTML2 += '<tr class="' + (hl ? 'highlight' : '') + '"><td>' + (item.isFinish ? '42.195 公里' : item.km + ' 公里') + '</td><td>' + formatPaceChinese(item.pace) + '</td><td>' + formatTime(item.cumulative) + '</td><td>' + (item.elevation ? item.elevation.toFixed(0) + 'm' : '') + '</td><td>' + note + hrBadge + '</td></tr>';
             });
             tableHTML2 += '</tbody>';
             document.getElementById('paceTable').innerHTML = tableHTML2;
@@ -2028,6 +2052,16 @@
 
         document.getElementById('targetTime').addEventListener('change', function() {
             document.getElementById('customTimeGroup').style.display = this.value === 'custom' ? 'block' : 'none';
+        });
+
+        document.getElementById('strategy').addEventListener('change', function() {
+            const hrGroup = document.getElementById('hrMaxGroup');
+            if (hrGroup) hrGroup.style.display = this.value === 'hrzone' ? 'block' : 'none';
+        });
+
+        document.getElementById('marathonSelect').addEventListener('change', function() {
+            selectedMarathon = this.value;
+            if (window._lastPaceProfile) drawElevationChart();
         });
 
         ['trainingPace','halfMarathon','best10k','customTime'].forEach(id => {
