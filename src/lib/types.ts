@@ -15,5 +15,6 @@ export interface WristbandConfig {
   strategy: PaceStrategy;
   showElevation: boolean;
   showQR: boolean;
+  staminaFactor?: number; // -2 to +2
   qrUrl?: string;
 }
