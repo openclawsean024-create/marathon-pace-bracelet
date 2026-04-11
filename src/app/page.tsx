@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <header className="py-8 text-center">
-        <h1 className="text-3xl font-bold text-white mb-2" style="background: linear-gradient(135deg, #e94560, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <h1 className="text-3xl font-bold mb-2" style={{ background: 'linear-gradient(135deg, #e94560, #ff6b6b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
           🏃 馬拉松配速手環產生器
         </h1>
         <p className="text-slate-400">選擇目標時間與賽道，產生可列印配速手環</p>
