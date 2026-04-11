@@ -60,17 +60,34 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <header className="py-8 text-center">
-        <h1 className="text-3xl font-bold mb-2" style={{ background: 'linear-gradient(135deg, #e94560, #ff6b6b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-          🏃 馬拉松配速手環產生器
-        </h1>
-        <p className="text-slate-400">選擇目標時間與賽道，產生可列印配速手環</p>
+        <div className="inline-flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #e94560, #ff6b6b)', boxShadow: '0 4px 16px rgba(233,69,96,0.4)' }}>
+            <span className="text-xl">🏃</span>
+          </div>
+          <h1
+            className="text-3xl font-bold"
+            style={{
+              background: 'linear-gradient(135deg, #e94560 0%, #ff6b6b 50%, #f59e0b 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textShadow: 'none',
+            }}
+          >
+            馬拉松配速手環產生器
+          </h1>
+        </div>
+        <p className="text-slate-400 text-sm tracking-wide">選擇目標時間與賽道，產生可列印配速手環</p>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="grid md:grid-cols-2 gap-8">
           {/* 設定面板 */}
           <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6 no-print">
-            <h2 className="text-xl font-bold text-slate-800">⚙️ 設定</h2>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-1.5 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #e94560, #ff6b6b)' }} />
+              <h2 className="text-xl font-bold text-slate-800">設定</h2>
+            </div>
 
             {/* 目標時間 */}
             <div>
@@ -203,13 +220,15 @@ export default function HomePage() {
           </div>
 
           {/* 手環預覽（供列印使用） */}
-          <div id="wristband-print-area">
-            <WristbandPreview
-              segments={segments}
-              course={course}
-              targetTime={targetTime}
-              strategy={strategy}
-            />
+          <div>
+            <div id="wristband-container">
+              <WristbandPreview
+                segments={segments}
+                course={course}
+                targetTime={targetTime}
+                strategy={strategy}
+              />
+            </div>
           </div>
         </div>
       </div>

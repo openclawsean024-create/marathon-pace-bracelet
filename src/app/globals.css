@@ -37,21 +37,28 @@ body {
     visibility: hidden;
   }
 
-  /* 只顯示手環 DOM */
-  #wristband-print-area,
-  #wristband-print-area * {
+  /* 只顯示 #wristband-container DOM */
+  #wristband-container,
+  #wristband-container * {
     visibility: visible;
   }
 
-  #wristband-print-area {
+  #wristband-container {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
   }
 
-  /* 移除所有陰影、圓角，避免浪費墨水 */
+  /* 移除陰影、圓角，避免浪費墨水 */
   .no-print {
     display: none !important;
+  }
+
+  /* 強制背景色列印 */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 }
