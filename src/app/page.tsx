@@ -6,7 +6,7 @@ import { calculateSegments } from '@/lib/pace-engine';
 import { WristbandPreview } from '@/components/WristbandPreview';
 import { generateWristbandPDF } from '@/lib/pdf-generator';
 
-// 目標時間：3:00 ～ 7:00，每30分鐘一格
+// 目標時間：3:00 ～ 7:00，每30分鐘一格，覆蓋規格要求全範圍
 function buildTargetTimes() {
   const times = [];
   for (let h = 3; h <= 7; h++) {
@@ -36,7 +36,7 @@ export default function HomePage() {
   const [courseId, setCourseId] = useState('taipei');
   const [strategy, setStrategy] = useState<PaceStrategy>('negative-split');
   const [staminaFactor, setStaminaFactor] = useState(0); // -2 to +2
-  const [showElevation, setShowElevation] = useState(false); // P0: 預設關閉，不顯示干擾變數
+  const [showElevation, setShowElevation] = useState(false); // P0: 預設關閉
   const [showQR, setShowQR] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -52,19 +52,27 @@ export default function HomePage() {
     }
   };
 
+  // 列印：利用 window.print()，配合 CSS @media print 隱藏非手環元素
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <main className="min-h-screen bg-slate-100">
-      <header className="py-8 text-center bg-slate-900 text-white">
-        <h1 className="text-3xl font-bold mb-2">🏃 馬拉松配速手環產生器</h1>
-        <p className="text-slate-300">選擇目標時間與賽道，產生可列印配速手環</p>
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <header className="py-8 text-center">
+        <h1 className="text-3xl font-bold text-white mb-2">
+          🏃 馬拉松配速手環產生器
+        </h1>
+        <p className="text-slate-400">選擇目標時間與賽道，產生可列印配速手環</p>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="grid md:grid-cols-2 gap-8">
+          {/* 設定面板 */}
           <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6">
             <h2 className="text-xl font-bold text-slate-800">⚙️ 設定</h2>
 
-            {/* 目標時間 — 3:00~7:00 */}
+            {/* 目標時間 */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-3">目標完賽時間</label>
               <div className="grid grid-cols-2 gap-2">
@@ -72,9 +80,9 @@ export default function HomePage() {
                   <button
                     key={t.value}
                     onClick={() => setTargetTime(t.value)}
-                    className={`p-3 rounded-xl border-2 ${
+                    className={`p-3 rounded-xl border-2 transition-all ${
                       targetTime === t.value
-                        ? 'border-slate-900 bg-slate-900 text-white'
+                        ? 'border-slate-800 bg-slate-800 text-white'
                         : 'border-slate-200 hover:border-slate-400'
                     }`}
                   >
@@ -85,7 +93,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 六場台灣賽事 */}
+            {/* 賽道 */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-3">賽道</label>
               <div className="space-y-2">
@@ -93,9 +101,9 @@ export default function HomePage() {
                   <button
                     key={c.id}
                     onClick={() => setCourseId(c.id)}
-                    className={`w-full text-left p-3 rounded-xl border-2 ${
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
                       courseId === c.id
-                        ? 'border-slate-900 bg-slate-900 text-white'
+                        ? 'border-slate-800 bg-slate-800 text-white'
                         : 'border-slate-200 hover:border-slate-400'
                     }`}
                   >
@@ -116,9 +124,9 @@ export default function HomePage() {
                   <button
                     key={s.value}
                     onClick={() => setStrategy(s.value)}
-                    className={`w-full text-left p-3 rounded-xl border-2 ${
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
                       strategy === s.value
-                        ? 'border-slate-900 bg-slate-900 text-white'
+                        ? 'border-slate-800 bg-slate-800 text-white'
                         : 'border-slate-200 hover:border-slate-400'
                     }`}
                   >
@@ -129,12 +137,16 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* P1：體力調整滑桿 */}
+            {/* 體力調整 */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-3">
                 體力調整
                 <span className="ml-2 text-xs font-normal text-slate-500">
-                  {staminaFactor === 0 ? '正常' : staminaFactor > 0 ? `體力佳 +${staminaFactor} (每公里快 ${staminaFactor * 5} 秒)` : `體力差 ${staminaFactor} (每公里慢 ${Math.abs(staminaFactor) * 5} 秒)`}
+                  {staminaFactor === 0
+                    ? '正常'
+                    : staminaFactor > 0
+                    ? `體力佳 +${staminaFactor} (每公里快 ${staminaFactor * 5} 秒)`
+                    : `體力差 ${staminaFactor} (每公里慢 ${Math.abs(staminaFactor) * 5} 秒)`}
                 </span>
               </label>
               <input
@@ -144,31 +156,55 @@ export default function HomePage() {
                 step={1}
                 value={staminaFactor}
                 onChange={(e) => setStaminaFactor(Number(e.target.value))}
-                className="w-full accent-slate-900"
+                className="w-full accent-slate-800"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>體力差</span><span>正常</span><span>體力佳</span>
+                <span>體力差</span>
+                <span>正常</span>
+                <span>體力佳</span>
               </div>
             </div>
 
-            {/* 顯示選項 — 預設不顯示高度圖 */}
-            <div className="flex gap-4 flex-wrap">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={showQR} onChange={(e) => setShowQR(e.target.checked)} />
-                QR Code
+            {/* 顯示選項 */}
+            <div className="flex gap-4 flex-wrap no-print">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showQR}
+                  onChange={(e) => setShowQR(e.target.checked)}
+                  className="accent-slate-800"
+                />
+                <span className="text-sm text-slate-700">顯示 QR Code</span>
               </label>
             </div>
 
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              className="w-full py-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold rounded-xl text-lg"
-            >
-              {isGenerating ? '產生中...' : '📄 下載 PDF 手環'}
-            </button>
+            {/* 操作按鈕 */}
+            <div className="flex flex-col gap-3 no-print">
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isGenerating}
+                className="w-full py-4 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-400 text-white font-bold rounded-xl text-lg transition-colors"
+              >
+                {isGenerating ? '產生中...' : '📄 下載 PDF 手環'}
+              </button>
+              <button
+                onClick={handlePrint}
+                className="w-full py-3 bg-white border-2 border-slate-300 hover:border-slate-500 text-slate-800 font-semibold rounded-xl transition-colors"
+              >
+                🖨️ 列印手環（瀏覽器列印）
+              </button>
+            </div>
           </div>
 
-          <WristbandPreview segments={segments} course={course} targetTime={targetTime} strategy={strategy} />
+          {/* 手環預覽（供列印使用） */}
+          <div id="wristband-print-area">
+            <WristbandPreview
+              segments={segments}
+              course={course}
+              targetTime={targetTime}
+              strategy={strategy}
+            />
+          </div>
         </div>
       </div>
     </main>

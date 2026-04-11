@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Inter:wght@400;600;700&display=swap');
-
 @import 'tailwindcss';
 
 :root {
@@ -12,8 +11,38 @@
   --color-border: #dee2e6;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Noto Sans TC', 'Inter', sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
+  min-height: 100vh;
+}
+
+@media print {
+  body > * {
+    visibility: hidden;
+  }
+
+  #wristband-print-area,
+  #wristband-print-area * {
+    visibility: visible;
+  }
+
+  #wristband-print-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #1a1a2e;
+  }
+
+  .no-print {
+    display: none !important;
+  }
 }

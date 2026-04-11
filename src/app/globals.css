@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+@import 'tailwindcss';
 
 :root {
   --color-primary: #1a1a2e;
@@ -21,4 +22,33 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   min-height: 100vh;
+}
+
+/* ============================================
+   列印樣式：只印出手環本體，不含其他元素
+   ============================================ */
+@media print {
+  /* 隱藏所有非手環元素 */
+  body > * {
+    visibility: hidden;
+  }
+
+  /* 只顯示手環 DOM */
+  #wristband-print-area,
+  #wristband-print-area * {
+    visibility: visible;
+  }
+
+  #wristband-print-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #1a1a2e;
+  }
+
+  /* 移除所有陰影、圓角，避免浪費墨水 */
+  .no-print {
+    display: none !important;
+  }
 }
