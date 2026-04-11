@@ -4,11 +4,15 @@
 :root {
   --color-primary: #1a1a2e;
   --color-accent: #e94560;
-  --color-bg: #f8f9fa;
-  --color-card: #ffffff;
-  --color-text: #1a1a2e;
-  --color-muted: #6c757d;
-  --color-border: #dee2e6;
+  --color-accent2: #ff6b6b;
+  --color-bg: #0f0f1a;
+  --color-card: #1a1a2e;
+  --color-text: #ffffff;
+  --color-muted: #94a3b8;
+  --color-border: rgba(255,255,255,0.1);
+  --color-negative-split: #e94560;
+  --color-even-pace: #3b82f6;
+  --color-safe-start: #10b981;
 }
 
 * {
@@ -29,7 +33,7 @@ body {
    ============================================ */
 @media print {
   /* 隱藏所有非手環元素 */
-  body > * {
+  body * {
     visibility: hidden;
   }
 
@@ -40,11 +44,10 @@ body {
   }
 
   #wristband-print-area {
-    position: fixed;
-    top: 0;
+    position: absolute;
     left: 0;
+    top: 0;
     width: 100%;
-    background: #1a1a2e;
   }
 
   /* 移除所有陰影、圓角，避免浪費墨水 */

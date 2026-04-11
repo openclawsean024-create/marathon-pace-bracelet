@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <header className="py-8 text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold text-white mb-2" style="background: linear-gradient(135deg, #e94560, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
           🏃 馬拉松配速手環產生器
         </h1>
         <p className="text-slate-400">選擇目標時間與賽道，產生可列印配速手環</p>
@@ -69,7 +69,7 @@ export default function HomePage() {
       <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="grid md:grid-cols-2 gap-8">
           {/* 設定面板 */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6">
+          <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6 no-print">
             <h2 className="text-xl font-bold text-slate-800">⚙️ 設定</h2>
 
             {/* 目標時間 */}
@@ -120,20 +120,25 @@ export default function HomePage() {
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-3">配速策略</label>
               <div className="space-y-2">
-                {STRATEGIES.map((s) => (
-                  <button
-                    key={s.value}
-                    onClick={() => setStrategy(s.value)}
-                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
-                      strategy === s.value
-                        ? 'border-slate-800 bg-slate-800 text-white'
-                        : 'border-slate-200 hover:border-slate-400'
-                    }`}
-                  >
-                    <div className="font-bold">{s.label}</div>
-                    <div className="text-xs opacity-70">{s.desc}</div>
-                  </button>
-                ))}
+                {STRATEGIES.map((s) => {
+                  const isSelected = strategy === s.value;
+                  const btnColor = s.value === 'negative-split' ? '#e94560' : s.value === 'even-pace' ? '#3b82f6' : '#10b981';
+                  return (
+                    <button
+                      key={s.value}
+                      onClick={() => setStrategy(s.value)}
+                      className="w-full text-left p-3 rounded-xl border-2 transition-all"
+                      style={{
+                        borderColor: isSelected ? btnColor : '#e2e8f0',
+                        backgroundColor: isSelected ? btnColor : '#ffffff',
+                        color: isSelected ? '#ffffff' : '#1e293b',
+                      }}
+                    >
+                      <div className="font-bold">{s.label}</div>
+                      <div className="text-xs" style={{ opacity: isSelected ? 0.8 : 0.6 }}>{s.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -183,7 +188,8 @@ export default function HomePage() {
               <button
                 onClick={handleDownloadPDF}
                 disabled={isGenerating}
-                className="w-full py-4 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-400 text-white font-bold rounded-xl text-lg transition-colors"
+                className="w-full py-4 text-white font-bold rounded-xl text-lg transition-all hover:opacity-90 disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #e94560, #ff6b6b)' }}
               >
                 {isGenerating ? '產生中...' : '📄 下載 PDF 手環'}
               </button>

@@ -41,10 +41,14 @@ export function WristbandPreview({ segments, course, targetTime, strategy }: Wri
         <p className="text-slate-400 text-sm">即時更新 · 最終品質以 PDF 為準</p>
       </div>
 
-      {/* ===== 手環本體（列印對象）===== */}
+      {/* ===== 手環本體框架（列印對象）===== */}
       <div
-        className="overflow-x-auto"
-        style={{ backgroundColor: '#1a1a2e', borderRadius: '1rem' }}
+        className="rounded-2xl overflow-hidden"
+        style={{
+          background: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%)',
+          boxShadow: '0 8px 32px rgba(233,69,96,0.25), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+          border: '1px solid rgba(233,69,96,0.3)',
+        }}
       >
         <div className="flex min-w-[640px]" style={{ backgroundColor: '#1a1a2e' }}>
           {segments.map((seg, i) => {
@@ -119,13 +123,13 @@ export function WristbandPreview({ segments, course, targetTime, strategy }: Wri
         </div>
       </div>
 
-      {/* 賽道補給提示 */}
+      {/* 賽道提示：降低視覺權重 */}
       <div
         className="rounded-xl p-4 text-sm"
-        style={{ backgroundColor: 'rgba(233,69,96,0.15)', border: '1px solid rgba(233,69,96,0.3)' }}
+        style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
-        <div className="text-white font-semibold mb-1">💧 賽道提示</div>
-        <div className="text-white/70 text-xs leading-relaxed">
+        <div className="text-white/60 font-semibold mb-1 text-xs">💧 賽道提示</div>
+        <div className="text-white/40 text-xs leading-relaxed">
           每 5K 補水 · 30K 後補充能量膠 · 注意汐止大同路折返（台北馬）
         </div>
       </div>
@@ -140,11 +144,11 @@ export function WristbandPreview({ segments, course, targetTime, strategy }: Wri
           <div
             key={item.label}
             className="rounded-xl p-3 text-center"
-            style={{ backgroundColor: `${item.color}20`, border: `1px solid ${item.color}60` }}
+            style={{ backgroundColor: `${item.color}15`, border: `1px solid ${item.color}40` }}
           >
             <div className="text-white font-bold text-xs">{item.label}</div>
-            <div className="text-white/60 text-xs mt-1">{item.range}</div>
-            <div className="text-white/40 text-xs mt-1 leading-tight">{item.tip}</div>
+            <div className="text-white/50 text-xs mt-1">{item.range}</div>
+            <div className="text-white/35 text-xs mt-1 leading-tight">{item.tip}</div>
           </div>
         ))}
       </div>
