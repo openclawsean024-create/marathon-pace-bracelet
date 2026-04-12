@@ -4,6 +4,10 @@
 /* ============================================
    Design Tokens — Strava Design Language
    ============================================ */
+
+/* ============================================
+   Design Tokens — Strava Design Language
+   ============================================ */
 :root {
   /* Brand */
   --strava-orange: #FC5200;
@@ -255,16 +259,16 @@ font-variant-numeric: tabular-nums;
 }
 
 .course-card.active {
-  border-color: var(--strava-orange);
-  background: var(--strava-orange);
+  border-color: var(--strava-orange) !important;
+  background: var(--strava-orange) !important;
 }
 
 .course-card.active .course-name {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
 }
 
 .course-card.active .course-meta {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
 .course-name {
@@ -678,46 +682,67 @@ font-variant-numeric: tabular-nums;
 }
 
 /* ============================================
-   Print Styles — Wristband Only
+   Print Styles — A4 Single Page, Wristband Only
    ============================================ */
 @media print {
-  /* Hide everything by default */
-  body * {
-    visibility: hidden;
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
   }
 
-  /* Only wristband card visible */
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+  }
+
+  /* Hide everything except wristband */
+  .no-print,
+  .page-wrapper > *:not(.content-grid),
+  .content-grid > *:not(#wristband-container),
+  #wristband-container > *:not(.results-panel),
+  .results-panel > *:not(.wristband-card),
+  .results-panel .no-print {
+    display: none !important;
+  }
+
+  /* Show and position wristband card */
   .wristband-card,
   .wristband-card * {
-    visibility: visible;
+    visibility: visible !important;
   }
 
-  /* Isolate wristband on page */
   .wristband-card {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    left: 10mm;
+    top: 10mm;
+    width: calc(190mm);
     border: none;
     box-shadow: none;
     border-radius: 0;
-  }
-
-  /* Remove gradient bg for clean print */
-  .wristband-card {
     background: #FFFFFF !important;
-  }
-
-  .wristband-body {
-    background: #FFFFFF !important;
-  }
-
-  .wristband-segment {
-    background: #FFFFFF !important;
+    /* Scale to fit A4 width */
+    transform: scale(1);
+    transform-origin: top left;
   }
 
   .wristband-scroll-container {
     overflow: visible !important;
+  }
+
+  .wristband-body {
+    background: #FFFFFF !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    min-width: auto !important;
+  }
+
+  .wristband-segment {
+    background: #FFFFFF !important;
+    flex-shrink: 0 !important;
+    min-width: 60px !important;
   }
 
   /* Force color printing */
@@ -725,11 +750,6 @@ font-variant-numeric: tabular-nums;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
-  }
-
-  /* Hide non-print elements */
-  .no-print {
-    display: none !important;
   }
 }
 
