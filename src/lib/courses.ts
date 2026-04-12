@@ -1,4 +1,4 @@
-export type PaceStrategy = 'negative-split' | 'even-pace' | 'safe-start';
+export type PaceStrategy = 'negative-split' | 'even-pace' | 'positive-split';
 
 export interface CourseNode {
   km: number;

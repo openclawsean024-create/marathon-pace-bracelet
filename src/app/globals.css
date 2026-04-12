@@ -1,18 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;700&display=swap');
 @import 'tailwindcss';
 
+/* ============================================
+   Design Tokens — Strava Design Language
+   ============================================ */
 :root {
-  --color-primary: #1a1a2e;
-  --color-accent: #e94560;
-  --color-accent2: #ff6b6b;
-  --color-bg: #0f0f1a;
-  --color-card: #1a1a2e;
-  --color-text: #ffffff;
-  --color-muted: #94a3b8;
-  --color-border: rgba(255,255,255,0.1);
-  --color-negative-split: #e94560;
-  --color-even-pace: #3b82f6;
-  --color-safe-start: #10b981;
+  /* Brand */
+  --strava-orange: #FC5200;
+  --strava-orange-hover: #CC4200;
+  --strava-grenadier: #CC4200;
+
+  /* Neutrals */
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #6B6B6B;
+  --color-text-muted: #94A3B8;
+  --color-bg-page: #F7F7F8;
+  --color-bg-card: #FFFFFF;
+  --color-border: #E8E8E8;
+
+  /* Strategy colors */
+  --color-negative-split: #FC5200;
+  --color-even-pace: #3B82F6;
+  --color-positive-split: #10B981;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
 }
 
 * {
@@ -21,44 +38,727 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Noto Sans TC', 'Inter', sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text);
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Inter tabular nums for data alignment */
+font-variant-numeric: tabular-nums;
+
+/* ============================================
+   Header
+   ============================================ */
+.strava-header {
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-lg) var(--space-xl);
+}
+
+.strava-logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--strava-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(252, 82, 0, 0.3);
+}
+
+.strava-headline {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.5px;
+}
+
+.strava-headline span {
+  color: var(--strava-orange);
 }
 
 /* ============================================
-   列印樣式：只印出手環本體，不含其他元素
+   Input Panel (Left Column)
+   ============================================ */
+.input-panel {
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  padding: var(--space-xl);
+}
+
+.input-section {
+  margin-bottom: var(--space-xl);
+}
+
+.input-section:last-child {
+  margin-bottom: 0;
+}
+
+.input-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ============================================
+   Time Grid
+   ============================================ */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+}
+
+@media (max-width: 640px) {
+  .time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.time-btn {
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.time-btn:hover {
+  border-color: var(--strava-orange);
+  background: #FFF5F0;
+}
+
+.time-btn.active {
+  border-color: var(--strava-orange);
+  background: var(--strava-orange);
+}
+
+.time-btn.active .time-btn-label {
+  color: #FFFFFF;
+}
+
+.time-btn.active .time-btn-pace {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.time-btn-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.time-btn-pace {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   Strategy Segmented Control
+   ============================================ */
+.strategy-segmented {
+  display: flex;
+  background: var(--color-bg-page);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.strategy-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.strategy-tab:hover:not(.active) {
+  background: rgba(252, 82, 0, 0.06);
+}
+
+.strategy-tab.active {
+  background: var(--color-bg-card);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.strategy-tab-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.strategy-tab.active .strategy-tab-label {
+  color: var(--strava-orange);
+}
+
+.strategy-tab-desc {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.strategy-tab.active .strategy-tab-desc {
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Course Cards
+   ============================================ */
+.course-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.course-card {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-card:hover {
+  border-color: var(--strava-orange);
+  background: #FFF5F0;
+}
+
+.course-card.active {
+  border-color: var(--strava-orange);
+  background: var(--strava-orange);
+}
+
+.course-card.active .course-name {
+  color: #FFFFFF;
+}
+
+.course-card.active .course-meta {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.course-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.course-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   Performance Inputs (NEW in v3)
+   ============================================ */
+.perf-input-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.perf-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perf-input-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.perf-input-group input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-card);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.perf-input-group input:focus {
+  border-color: var(--strava-orange);
+}
+
+.perf-input-group input::placeholder {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* ============================================
+   Primary CTA Button
+   ============================================ */
+.btn-primary {
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--strava-orange);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: var(--strava-orange-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  border-color: var(--strava-orange);
+  color: var(--strava-orange);
+}
+
+/* ============================================
+   Results Panel
+   ============================================ */
+.results-panel {
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.results-headline {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ============================================
+   Wristband — Strava Style
+   ============================================ */
+.wristband-card {
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-border);
+}
+
+.wristband-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wristband-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.wristband-title-accent {
+  color: var(--strava-orange);
+}
+
+.wristband-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.wristband-stat {
+  text-align: right;
+}
+
+.wristband-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.wristband-stat-value.large {
+  font-size: 28px;
+  color: var(--strava-orange);
+}
+
+.wristband-stat-label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* ============================================
+   Wristband Body — Horizontal Scroll
+   ============================================ */
+.wristband-scroll-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--strava-orange) var(--color-border);
+}
+
+.wristband-scroll-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.wristband-scroll-container::-webkit-scrollbar-track {
+  background: var(--color-border);
+}
+
+.wristband-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--strava-orange);
+  border-radius: 2px;
+}
+
+.wristband-body {
+  display: flex;
+  min-width: max-content;
+  padding: 0;
+}
+
+.wristband-segment {
+  min-width: 72px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 8px 16px;
+  border-right: 1px solid var(--color-border);
+  position: relative;
+  transition: background 0.15s;
+}
+
+.wristband-segment:last-child {
+  border-right: none;
+}
+
+.wristband-segment.highlight-warmup {
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.wristband-segment.highlight-wall {
+  background: rgba(252, 82, 0, 0.08);
+}
+
+.wristband-segment.highlight-sprint {
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.wristband-segment.highlight-half {
+  background: rgba(252, 82, 0, 0.06);
+  border-left: 3px solid var(--strava-orange);
+}
+
+.wristband-segment.highlight-finish {
+  background: rgba(16, 185, 129, 0.06);
+  border-left: 3px solid #10B981;
+}
+
+.wristband-km {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wristband-pace {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wristband-pace.warmup {
+  color: #F59E0B;
+}
+
+.wristband-pace.wall {
+  color: var(--strava-orange);
+}
+
+.wristband-pace.sprint {
+  color: #10B981;
+}
+
+.wristband-cumulative {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.wristband-note {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--strava-orange);
+  margin-top: 4px;
+  text-align: center;
+  max-width: 60px;
+}
+
+/* ============================================
+   Stage Hints Bar
+   ============================================ */
+.stage-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-border);
+  border-top: 1px solid var(--color-border);
+}
+
+.stage-card {
+  padding: 12px 16px;
+  background: var(--color-bg-card);
+}
+
+.stage-icon {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.stage-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.stage-range {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.stage-tip {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ============================================
+   QR + Info Footer
+   ============================================ */
+.wristband-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wristband-footer-info {
+  flex: 1;
+}
+
+.wristband-footer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.wristband-footer-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wristband-footer-notes {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+/* ============================================
+   Page Layout
+   ============================================ */
+.page-wrapper {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+}
+
+.content-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 380px 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+}
+
+/* ============================================
+   Print Styles — Wristband Only
    ============================================ */
 @media print {
-  /* 隱藏所有非手環元素 */
+  /* Hide everything by default */
   body * {
     visibility: hidden;
   }
 
-  /* 只顯示 #wristband-container DOM */
-  #wristband-container,
-  #wristband-container * {
+  /* Only wristband card visible */
+  .wristband-card,
+  .wristband-card * {
     visibility: visible;
   }
 
-  #wristband-container {
+  /* Isolate wristband on page */
+  .wristband-card {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
 
-  /* 移除陰影、圓角，避免浪費墨水 */
-  .no-print {
-    display: none !important;
+  /* Remove gradient bg for clean print */
+  .wristband-card {
+    background: #FFFFFF !important;
   }
 
-  /* 強制背景色列印 */
+  .wristband-body {
+    background: #FFFFFF !important;
+  }
+
+  .wristband-segment {
+    background: #FFFFFF !important;
+  }
+
+  .wristband-scroll-container {
+    overflow: visible !important;
+  }
+
+  /* Force color printing */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
+
+  /* Hide non-print elements */
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   Strategy Badge Colors
+   ============================================ */
+.strategy-negative-split .wristband-segment.highlight-wall .wristband-pace {
+  color: var(--strava-orange);
+}
+
+.strategy-even-pace .wristband-segment .wristband-pace {
+  color: var(--color-even-pace);
+}
+
+.strategy-positive-split .wristband-segment .wristband-pace {
+  color: var(--color-positive-split);
+}
+
+/* ============================================
+   Utility
+   ============================================ */
+.text-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.text-orange {
+  color: var(--strava-orange);
+}
+
+.bg-orange {
+  background: var(--strava-orange);
 }

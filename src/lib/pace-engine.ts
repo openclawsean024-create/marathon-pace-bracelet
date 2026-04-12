@@ -34,7 +34,8 @@ function basePaceSeconds(targetTime: string, course: Course) {
 function paceMultiplier(strategy: PaceStrategy, km: number, staminaFactor = 0) {
   let m = staminaFactor * 5; // ±5 sec/km per level
   if (strategy === 'negative-split') m += km <= 21.0975 ? 0.015 : -0.015;
-  if (strategy === 'safe-start') m += km <= 5 ? 0.03 : km <= 30 ? 0 : -0.015;
+  if (strategy === 'positive-split') m += km <= 21.0975 ? -0.015 : 0.015;
+  if (strategy === 'even-pace') m += 0;
   return 1 + m;
 }
 
