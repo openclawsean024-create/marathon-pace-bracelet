@@ -698,6 +698,11 @@ body {
    Print Styles — Wristband Only
    ============================================ */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
   /* Hide everything by default */
   body * {
     visibility: hidden;
@@ -709,12 +714,20 @@ body {
     visibility: visible;
   }
 
-  /* Isolate wristband on page */
+  /* Isolate wristband on page with 15mm safe margin */
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+  }
+
   #wristband-container {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    left: 15mm;
+    top: 15mm;
+    width: calc(210mm - 30mm);
   }
 
   /* Clean white background for print */
@@ -740,6 +753,21 @@ body {
   .no-print {
     display: none !important;
   }
+
+  /* Crop marks — 15mm safe margin boundary indicators */
+  .crop-mark {
+    position: absolute;
+    background: #000000;
+  }
+
+  .crop-mark-tl { top: 0; left: 0; width: 10mm; height: 0.5pt; }
+  .crop-mark-tr { top: 0; right: 0; width: 10mm; height: 0.5pt; }
+  .crop-mark-bl { bottom: 0; left: 0; width: 10mm; height: 0.5pt; }
+  .crop-mark-br { bottom: 0; right: 0; width: 10mm; height: 0.5pt; }
+  .crop-mark-tl-v { top: 0; left: 0; width: 0.5pt; height: 10mm; }
+  .crop-mark-tr-v { top: 0; right: 0; width: 0.5pt; height: 10mm; }
+  .crop-mark-bl-v { bottom: 0; left: 0; width: 0.5pt; height: 10mm; }
+  .crop-mark-br-v { bottom: 0; right: 0; width: 0.5pt; height: 10mm; }
 
   /* Force color printing */
   * {

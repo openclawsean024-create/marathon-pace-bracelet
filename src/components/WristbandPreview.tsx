@@ -58,6 +58,15 @@ export function WristbandPreview({ segments, course, targetTime, strategy, showQ
 
       {/* ===== 手環本體（列印對象）===== */}
       <div className="wristband-card" id="wristband-card">
+        {/* 裁切線 — 15mm 安全留白边界标记 */}
+        <div className="crop-mark crop-mark-tl" aria-hidden="true" />
+        <div className="crop-mark crop-mark-tr" aria-hidden="true" />
+        <div className="crop-mark crop-mark-bl" aria-hidden="true" />
+        <div className="crop-mark crop-mark-br" aria-hidden="true" />
+        <div className="crop-mark crop-mark-tl-v" aria-hidden="true" />
+        <div className="crop-mark crop-mark-tr-v" aria-hidden="true" />
+        <div className="crop-mark crop-mark-bl-v" aria-hidden="true" />
+        <div className="crop-mark crop-mark-br-v" aria-hidden="true" />
 
         {/* 手環頂部資訊列 */}
         <div className="wristband-header">

@@ -687,7 +687,7 @@ font-variant-numeric: tabular-nums;
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 15mm;
   }
 
   html, body {
@@ -743,6 +743,69 @@ font-variant-numeric: tabular-nums;
     background: #FFFFFF !important;
     flex-shrink: 0 !important;
     min-width: 60px !important;
+  }
+
+  /* Crop marks — printed at the 3 safety margin edges (top/left/right/bottom) */
+  .crop-mark {
+    position: absolute;
+    background: #000000;
+  }
+
+  .crop-mark-tl {
+    top: 0;
+    left: 0;
+    width: 10mm;
+    height: 0.5pt;
+  }
+
+  .crop-mark-tr {
+    top: 0;
+    right: 0;
+    width: 10mm;
+    height: 0.5pt;
+  }
+
+  .crop-mark-bl {
+    bottom: 0;
+    left: 0;
+    width: 10mm;
+    height: 0.5pt;
+  }
+
+  .crop-mark-br {
+    bottom: 0;
+    right: 0;
+    width: 10mm;
+    height: 0.5pt;
+  }
+
+  /* Vertical crop marks */
+  .crop-mark-tl-v {
+    top: 0;
+    left: 0;
+    width: 0.5pt;
+    height: 10mm;
+  }
+
+  .crop-mark-tr-v {
+    top: 0;
+    right: 0;
+    width: 0.5pt;
+    height: 10mm;
+  }
+
+  .crop-mark-bl-v {
+    bottom: 0;
+    left: 0;
+    width: 0.5pt;
+    height: 10mm;
+  }
+
+  .crop-mark-br-v {
+    bottom: 0;
+    right: 0;
+    width: 0.5pt;
+    height: 10mm;
   }
 
   /* Force color printing */
