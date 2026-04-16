@@ -5,7 +5,7 @@ import type { PaceSegment, WristbandConfig } from './types';
 // Also 5K intervals for clarity
 const CHECKPOINTS = [5, 10, 15, 16, 21.0975, 25, 30, 35, 40, 42.195];
 
-function parseTimeToSeconds(time: string) {
+export function parseTimeToSeconds(time: string) {
   const [h, m, s] = time.split(':').map(Number);
   return h * 3600 + m * 60 + s;
 }

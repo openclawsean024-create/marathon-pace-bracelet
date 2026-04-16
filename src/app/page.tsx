@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { COURSES, type PaceStrategy } from '@/lib/courses';
 import { calculateSegments, getTargetPace } from '@/lib/pace-engine';
 import { WristbandPreview } from '@/components/WristbandPreview';
+import { PaceChart } from '@/components/PaceChart';
 import { generateWristbandPDF } from '@/lib/pdf-generator';
 
 // 目標時間：3:00 ～ 7:00，每30分鐘一格
@@ -233,6 +234,11 @@ export default function HomePage() {
               targetTime={targetTime}
               strategy={strategy}
             />
+          </div>
+
+          {/* 配速曲線圖（ Strava 風格折線圖）*/}
+          <div className="no-print" style={{ marginTop: 20 }}>
+            <PaceChart segments={segments} targetTime={targetTime} strategy={strategy} />
           </div>
         </div>
       </div>
