@@ -35,7 +35,7 @@
             --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
             --radius: 12px;
-            --radius-lg: 18px;
+            --radius-lg: 12px;
             --shadow-card: 0 2px 12px rgba(0,0,0,0.45);
             --shadow-hover: 0 6px 24px rgba(0,0,0,0.55);
         }
@@ -97,15 +97,15 @@
 
         .hero-gradient {
             position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(180deg, rgba(18,18,18,0.65) 0%, rgba(18,18,18,0.3) 40%, rgba(18,18,18,0.6) 75%, rgba(18,18,18,1) 100%);
+            background: rgba(18,18,18,0.5);
         }
 
         .hero-grid {
             position: absolute; inset: 0; z-index: 2;
             background-image:
-                linear-gradient(rgba(252,76,2,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(252,76,2,0.04) 1px, transparent 1px);
-            background-size: 80px 80px;
+                linear-gradient(rgba(252,76,2,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(252,76,2,0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
         }
 
         .hero-content { position: relative; z-index: 10; max-width: 680px; }
@@ -139,7 +139,7 @@
             border: none; cursor: pointer; text-decoration: none;
             transition: background 0.2s, transform 0.2s; letter-spacing: -0.2px;
         }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-primary:hover { background: var(--primary-hover); }
 
         .btn-secondary {
             display: inline-flex; align-items: center; gap: 8px;
@@ -215,7 +215,7 @@
             border-radius: var(--radius); padding: 28px 24px;
             transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
         }
-        .feature-card:hover { border-color: var(--primary-border); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .feature-card:hover { border-color: var(--primary-border); transform: translateY(-2px); }
 
         .feature-icon {
             width: 44px; height: 44px; background: var(--primary-dim);
@@ -272,8 +272,8 @@
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 24px; transition: background 0.2s, transform 0.15s; letter-spacing: -0.2px;
         }
-        .btn-generate:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-generate:active { transform: translateY(0); }
+        .btn-generate:hover { background: var(--primary-hover); }
+        .btn-generate:active { transform: none; }
 
         /* ── RESULT ── */
         #result { display: none; }
@@ -286,7 +286,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
         .result-header {
-            background: var(--primary); padding: 28px 36px;
+            background: var(--primary); padding: 28px 36px; border-radius: var(--radius) var(--radius) 0 0;
             display: flex; align-items: center; justify-content: space-between;
         }
         .result-header-text h2 { font-size: 22px; font-weight: 800; color: var(--text-inv); letter-spacing: -0.5px; margin-bottom: 4px; }
