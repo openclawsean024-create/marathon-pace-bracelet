@@ -44,8 +44,11 @@ export function WristbandPreview({ segments, course, targetTime, strategy, showQ
   const qrUrl = `https://marathon-pace-wristband.vercel.app/?time=${targetTime}&course=${course.id}&strategy=${strategy}`;
   const avgPace = getTargetPace(targetTime, course);
 
-  // Format target time for display
-  const [th, tm, ts] = targetTime.split(':').map(Number);
+  // Format target time for display — guard against undefined/null/malformed targetTime
+  const timeParts = (targetTime ?? '04:00:00').split(':');
+  const th = parseInt(timeParts[0] ?? '4', 10) || 4;
+  const tm = parseInt(timeParts[1] ?? '00', 10) || 0;
+  const ts = parseInt(timeParts[2] ?? '00', 10) || 0;
   const totalMin = th * 60 + tm;
   const finishTimeLabel = `${th}:${String(tm).padStart(2, '0')}:${String(ts).padStart(2, '0')}`;
 
