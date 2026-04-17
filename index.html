@@ -845,6 +845,7 @@
 
         function generateBracelet() {
             var gender = document.getElementById('gender').value;
+            if (!gender) { alert('請選擇性別（必填）'); return; }
             var targetTime = document.getElementById('targetTime').value;
             var customTime = document.getElementById('customTime').value.trim();
             var trainingPace = document.getElementById('trainingPace').value.trim();
@@ -904,15 +905,18 @@
                 braceletHTML += '<div class="bracelet-row"><div class="bracelet-label">'+(item.isFinish?'終點':item.km+'公里')+'</div><div class="bracelet-time '+labelClass+'">'+formatTime(item.cumulative)+' <span style="color:#888;font-size:10px;">('+formatPace(item.pace)+')</span></div></div>';
             }
 
-            var notes = {1:'起點',5:'熱身結束',10:'第一檢查點',15:'半程逼近',21:'半程',25:'撞牆期',30:'突破點',35:'最後衝刺',40:'即將完賽',42.195:'終點！'};
-            var highlights = [1,10,21,30,42.195];
+            var notes = {1:'起點',5:'熱身結束',10:'第一檢查點',15:'半程逼近',21:'半程',25:'撞牆期（25-30K）',30:'突破點',35:'最後衝刺',40:'即將完賽',42.195:'終點！'};
+            var highlights = [1,10,21,25,42.195];
             var tableHTML = '<thead><tr><th>公里</th><th>配速</th><th>累積時間</th><th>海拔(m)</th><th>階段說明</th></tr></thead><tbody>';
+            var worldRecordPace = 121.0; // 2:01:09 = 121.15 seconds per km
             for (var k=0;k<paceProfile.length;k++) {
                 var row = paceProfile[k];
                 var note = notes[row.km] || (row.km%5===0 ? '— 檢查點' : '');
                 var hl = highlights.indexOf(row.km)!==-1;
-                tableHTML += '<tr class="'+(hl?'highlight':'')+'"><td>'+(row.isFinish?'42.195km':row.km+'km')+'</td><td>'+formatPaceChinese(row.pace)+'</td><td>'+formatTime(row.cumulative)+'</td><td>'+getMarathonElevation(row.km).toFixed(0)+'m</td><td>'+note+'</td></tr>';
+                tableHTML += '<tr'+(hl?' class="highlight"':'')+'><td>'+(row.isFinish?'42.195km':row.km+'km')+'</td><td>'+formatPaceChinese(row.pace)+'</td><td>'+formatTime(row.cumulative)+'</td><td>'+getMarathonElevation(row.km).toFixed(0)+'m</td><td>'+note+'</td></tr>';
             }
+            // World record reference row
+            tableHTML += '<tr style="background:#1a1a2e !important; border-top:2px solid #f5a623;"><td colspan="5" style="text-align:center; color:#f5a623; font-size:12px; padding:10px;">🏆 世界紀錄參考：Eliud Kipchoge 2:01:09（2022 Berlin）｜平均配速 2:52/km｜領先 '+(formatTime(targetSeconds - 7569))+'</td></tr>';
             tableHTML += '</tbody>';
             document.getElementById('paceTable').innerHTML = tableHTML;
             window._lastPaceProfile = paceProfile;
