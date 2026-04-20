@@ -28,41 +28,31 @@
 
         /* ── BRACELET ROWS ── */
         .bracelet-rows { border: 2px solid #000; border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
-        .bracelet-row { display: flex; border-bottom: 1px solid #ccc; font-size: 12px; page-break-inside: avoid; }
+        .bracelet-row { display: flex; border-bottom: 1px solid #000; font-size: 13px; page-break-inside: avoid; }
         .bracelet-row:last-child { border-bottom: none; }
-        .bracelet-row:nth-child(even) { background: #fafafa; }
-        .bracelet-row.half { background: #fff8e1 !important; }
-        .bracelet-row.checkpoint { background: #e8f5e9 !important; }
-        .bracelet-row.finish { background: #1a1a2e !important; color: #fff; }
+        .bracelet-row:nth-child(even) { background: #fff; }
+        .bracelet-row.half { background: #fff !important; }
+        .bracelet-row.checkpoint { background: #fff !important; }
+        .bracelet-row.finish { background: #000 !important; color: #fff; }
 
-        .km-label { width: 72px; padding: 9px 10px; font-weight: 700; border-right: 1px solid #ccc; display: flex; flex-direction: column; justify-content: center; background: #f0f0f0; font-size: 11px; }
-        .bracelet-row.half .km-label { background: #ffe082; color: #333; }
-        .bracelet-row.checkpoint .km-label { background: #c8e6c9; color: #1b5e20; }
-        .bracelet-row.finish .km-label { background: #1a237e; color: #fff; }
+        .km-label { width: 80px; padding: 10px 12px; font-weight: 700; border-right: 2px solid #000; display: flex; flex-direction: column; justify-content: center; background: #f5f5f5; font-size: 12px; }
+        .bracelet-row.half .km-label { background: #fff; color: #000; font-weight: 900; }
+        .bracelet-row.checkpoint .km-label { background: #fff; color: #333; }
+        .bracelet-row.finish .km-label { background: #000; color: #fff; }
         .km-label .sub { font-size: 9px; font-weight: 400; color: #666; margin-top: 1px; }
         .bracelet-row.half .km-label .sub, .bracelet-row.checkpoint .km-label .sub, .bracelet-row.finish .km-label .sub { color: inherit; opacity: 0.7; }
 
-        .time-display { flex: 1; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; }
-        .cumulative { font-weight: 700; font-size: 1.1em; }
-        .pace-note { font-size: 10px; color: #888; text-align: right; }
+        .time-display { flex: 1; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+        .cumulative { font-weight: 900; font-size: 1.25em; letter-spacing: -0.5px; }
+        .pace-note { font-size: 11px; color: #555; text-align: right; }
         .bracelet-row.finish .pace-note { color: rgba(255,255,255,0.6); }
 
         /* ── LEGEND ── */
         .legend { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: #666; }
-        .legend-item { display: flex; align-items: center; gap: 4px; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-        .legend-dot.half { background: #ffe082; border: 1px solid #ffc107; }
-        .legend-dot.checkpoint { background: #c8e6c9; border: 1px solid #4caf50; }
-        .legend-dot.finish { background: #1a237e; }
 
-        /* ── NOTES ── */
-        .notes { margin-top: 16px; padding: 12px; background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 10px; color: #555; }
-        .notes h4 { font-size: 11px; margin-bottom: 6px; color: #333; }
-        .notes ul { padding-left: 16px; line-height: 1.7; }
 
-        /* ── QR SECTION ── */
-        .qr-section { margin-top: 16px; text-align: center; font-size: 9px; color: #999; }
-        .qr-placeholder { width: 60px; height: 60px; border: 1px solid #ddd; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #bbb; }
+
+
 
         /* ── PRINT CONTROLS ── */
         .print-controls { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 100; }
@@ -79,14 +69,85 @@
         .full-table tr.finish-row td { background: #1a1a2e; color: #fff; }
 
         @media print {
-            body { padding: 0; }
-            .print-controls { display: none; }
-            .bracelet-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .strategy-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bracelet-row.half { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bracelet-row.finish { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .full-table-section { page-break-before: always; }
-            .print-workspace { max-width: 100%; }
+            @page { margin: 8mm; size: 58mm 150mm portrait; }
+
+            * { -webkit-print-color-adjust: none !important; print-color-adjust: none !important; }
+
+            body { padding: 0; background: #fff !important; color: #000 !important; font-family: 'JetBrains Mono', 'Noto Sans TC', monospace !important; }
+
+            .print-controls,
+            .legend,
+            .notes,
+            .qr-section,
+            .full-table-section { display: none !important; }
+
+            .print-workspace { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
+            /* ── HEADER ── */
+            .bracelet-header {
+                background: #000 !important;
+                color: #fff !important;
+                padding: 8px 10px;
+                border-radius: 6px 6px 0 0;
+            }
+            .bracelet-header::before { display: none; }
+            .bracelet-header h1 { font-size: 1em !important; margin-bottom: 2px; }
+            .bracelet-header .meta { font-size: 0.7em !important; }
+
+            /* ── MARATHON INFO ── */
+            .marathon-info { background: #fff !important; border: 1px solid #000 !important; border-top: none !important; padding: 5px 10px; font-size: 10px; }
+            .marathon-info .name { font-weight: 900 !important; color: #000 !important; }
+            .marathon-info .difficulty { color: #000 !important; font-weight: 900 !important; }
+            .marathon-info .gain { color: #555 !important; }
+
+            /* ── STRATEGY BANNER ── */
+            .strategy-banner {
+                background: #000 !important;
+                color: #fff !important;
+                padding: 5px 10px;
+                font-size: 10px;
+                font-weight: 900;
+            }
+
+            /* ── BRACELET ROWS ── */
+            .bracelet-rows {
+                border: 2px solid #000 !important;
+                border-top: none !important;
+                border-radius: 0 0 6px 6px;
+                overflow: hidden;
+            }
+
+            .bracelet-row {
+                border-bottom: 1px solid #000 !important;
+                background: #fff !important;
+                font-size: 12px !important;
+                page-break-inside: avoid;
+            }
+            .bracelet-row.half,
+            .bracelet-row.checkpoint { background: #fff !important; }
+            .bracelet-row.finish { background: #000 !important; color: #fff !important; }
+
+            .km-label {
+                width: 72px !important;
+                padding: 7px 8px !important;
+                background: #f5f5f5 !important;
+                border-right: 2px solid #000 !important;
+                font-size: 11px !important;
+                font-weight: 900 !important;
+                color: #000 !important;
+            }
+            .bracelet-row.half .km-label {
+                background: #fff !important;
+                color: #000 !important;
+                font-weight: 900 !important;
+            }
+            .bracelet-row.finish .km-label { background: #000 !important; color: #fff !important; }
+            .km-label .sub { font-size: 9px !important; color: #555 !important; }
+
+            .time-display { padding: 7px 10px !important; }
+            .cumulative { font-weight: 900 !important; font-size: 1.2em !important; }
+            .pace-note { font-size: 10px !important; color: #555 !important; }
+            .bracelet-row.finish .pace-note { color: rgba(255,255,255,0.7) !important; }
         }
     </style>
 </head>

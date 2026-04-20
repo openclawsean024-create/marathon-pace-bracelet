@@ -399,15 +399,85 @@
 
         /* ── PRINT ── */
         @media print {
-            .nav, .stats-strip, .features-section, .cta-section, .hero, .footer, .no-print { display: none !important; }
-            body { background: #fff; color: #000; }
-            .result-card { border: 2px solid #000; }
-            .result-header { background: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bracelet-preview { border: 2px solid #000; box-shadow: none; }
-            .bracelet-label { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bracelet-time.split { background: #fff3e0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bracelet-time.half { background: #ffcc80 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .pace-table th, .pace-table td { background: #fff !important; color: #000 !important; border: 1px solid #ccc; }
+            @page { margin: 6mm; size: A4 portrait; }
+
+            .nav, .stats-strip, .features-section, .cta-section, .hero, .footer, .no-print, .loading-overlay { display: none !important; }
+            body { background: #fff !important; color: #000 !important; font-family: 'Inter', -apple-system, sans-serif !important; -webkit-print-color-adjust: none !important; print-color-adjust: none !important; }
+            .container { padding: 0 !important; max-width: 100% !important; }
+
+            .result-card {
+                border: 2px solid #000 !important;
+                box-shadow: none !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+            }
+
+            .result-header {
+                background: #000 !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bracelet-preview {
+                border: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 12px !important;
+                background: #fff !important;
+            }
+
+            .bracelet-preview-body { flex-direction: column !important; gap: 8px !important; }
+            .world-elevation-col { display: none !important; }
+            .bracelet-section { width: 100% !important; }
+
+            .bracelet-label {
+                background: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 11px !important;
+                min-width: 72px !important;
+            }
+
+            .bracelet-time.split {
+                background: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bracelet-time.half {
+                background: #fff !important;
+                font-weight: 900 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bracelet-row {
+                border: 1px solid #ccc !important;
+                border-radius: 3px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .tips-card { display: none !important; }
+
+            .pace-table-wrap { border: 1px solid #ccc !important; border-radius: 6px !important; overflow: hidden !important; margin: 12px !important; }
+            .pace-table th, .pace-table td {
+                background: #fff !important;
+                color: #000 !important;
+                border: 1px solid #ccc !important;
+                font-size: 11px !important;
+                padding: 7px 10px !important;
+            }
+            .pace-table th { background: #f5f5f5 !important; font-weight: 700 !important; }
+            .pace-table tr.highlight td { background: #f0f0f0 !important; }
+
+            .full-table-toggle { display: none !important; }
+            #fullPaceTable { display: none !important; }
+
+            .result-actions { display: none !important; }
+
+            .result-header-meta { gap: 16px !important; }
+            .result-header-stat-value { font-size: 18px !important; }
         }
     </style>
 </head>
