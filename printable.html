@@ -3,188 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全馬配速手環 — 列印版</title>
+    <title>全馬配速手環 — A4 可剪裁版</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'JetBrains Mono', 'Noto Sans TC', monospace; background: #fff; color: #000; padding: 20px; }
-        .print-workspace { max-width: 380px; margin: 0 auto; }
 
-        /* ── BRACELET HEADER ── */
-        .bracelet-header { background: #000; color: #fff; padding: 16px 20px; text-align: center; border-radius: 12px 12px 0 0; position: relative; overflow: hidden; }
-        .bracelet-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, #ff6b35 0%, #ff7a3d 50%, #7cb518 100%); opacity: 0.15; }
-        .bracelet-header > * { position: relative; }
-        .bracelet-header h1 { font-size: 1.3em; margin-bottom: 4px; letter-spacing: -0.5px; }
-        .bracelet-header .meta { font-size: 0.75em; opacity: 0.8; }
-
-        /* ── MARATHON INFO ── */
-        .marathon-info { background: #f5f5f5; border: 1px solid #e0e0e0; border-top: none; padding: 10px 16px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
-        .marathon-info .name { font-weight: 700; color: #333; }
-        .marathon-info .difficulty { color: #ff6b35; font-weight: 700; }
-        .marathon-info .gain { color: #666; }
-
-        /* ── STRATEGY BANNER ── */
-        .strategy-banner { background: linear-gradient(90deg, #ff6b35, #ff7a3d); color: #fff; padding: 8px 16px; font-size: 11px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
-
-        /* ── BRACELET ROWS ── */
-        .bracelet-rows { border: 2px solid #000; border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; }
-        .bracelet-row { display: flex; border-bottom: 1px solid #000; font-size: 13px; page-break-inside: avoid; }
-        .bracelet-row:last-child { border-bottom: none; }
-        .bracelet-row:nth-child(even) { background: #fff; }
-        .bracelet-row.half { background: #fff !important; }
-        .bracelet-row.checkpoint { background: #fff !important; }
-        .bracelet-row.finish { background: #000 !important; color: #fff; }
-
-        .km-label { width: 80px; padding: 10px 12px; font-weight: 700; border-right: 2px solid #000; display: flex; flex-direction: column; justify-content: center; background: #f5f5f5; font-size: 12px; }
-        .bracelet-row.half .km-label { background: #fff; color: #000; font-weight: 900; }
-        .bracelet-row.checkpoint .km-label { background: #fff; color: #333; }
-        .bracelet-row.finish .km-label { background: #000; color: #fff; }
-        .km-label .sub { font-size: 9px; font-weight: 400; color: #666; margin-top: 1px; }
-        .bracelet-row.half .km-label .sub, .bracelet-row.checkpoint .km-label .sub, .bracelet-row.finish .km-label .sub { color: inherit; opacity: 0.7; }
-
-        .time-display { flex: 1; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
-        .cumulative { font-weight: 900; font-size: 1.25em; letter-spacing: -0.5px; }
-        .pace-note { font-size: 11px; color: #555; text-align: right; }
-        .bracelet-row.finish .pace-note { color: rgba(255,255,255,0.6); }
-
-        /* ── LEGEND ── */
-        .legend { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: #666; }
-
-
-
-
+        body {
+            font-family: 'JetBrains Mono', 'Noto Sans TC', monospace;
+            background: #f0f0f0;
+            color: #000;
+            padding: 20px;
+        }
 
         /* ── PRINT CONTROLS ── */
-        .print-controls { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 100; }
-        .print-btn { background: #000; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        .print-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+        .print-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
         .print-btn:hover { background: #333; }
 
+        /* ── SCREEN: A4 PREVIEW ── */
+        .a4-preview {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 40px;
+            padding: 15mm 15mm 15mm 15mm;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        /* ── BRACELET CARD ── */
+        .bracelet-card {
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin-bottom: 12mm;
+            position: relative;
+            background: #fff;
+            overflow: visible;
+        }
+
+        /* 裁切標記文字 */
+        .cut-label {
+            position: absolute;
+            top: -8mm;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: #999;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        /* 膠水區提示 */
+        .glue-zone-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 7px;
+            color: #ccc;
+            writing-mode: vertical-rl;
+            letter-spacing: 1px;
+        }
+        .glue-zone-label.left { left: 2mm; }
+        .glue-zone-label.right { right: 2mm; }
+
+        /* ── BRACELET INNER CONTENT ── */
+        .bracelet-inner {
+            display: flex;
+            height: 58mm; /* 58mm tall = 2.5cm approx × 2 for easier folding */
+            border: 1.5px solid #000;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 折疊線 */
+        .bracelet-inner::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #ccc;
+            transform: translateX(-50%);
+        }
+
+        /* QR Code 區 */
+        .qr-zone {
+            width: 22mm;
+            min-width: 22mm;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3mm 2mm;
+            border-right: 1px solid #000;
+        }
+        .qr-code {
+            width: 16mm;
+            height: 16mm;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6px;
+            color: #000;
+            text-align: center;
+            border: 1px solid #ccc;
+            line-height: 1.2;
+            padding: 1mm;
+        }
+        .qr-zone .scan-hint {
+            font-size: 6px;
+            color: #fff;
+            margin-top: 2mm;
+            text-align: center;
+        }
+
+        /* 手環內容區（扣除 QR + 膠水區）*/
+        .bracelet-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 手環 Header */
+        .bracelet-header-row {
+            background: #000;
+            color: #fff;
+            padding: 2mm 3mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+        .bracelet-header-row .event-name {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .bracelet-header-row .target-info {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        /* 策略標示 */
+        .strategy-row {
+            background: #000;
+            color: #fff;
+            padding: 1.5mm 3mm;
+            font-size: 8px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* 分段表格區 */
+        .splits-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .split-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .split-column .col-header {
+            background: #f0f0f0;
+            padding: 1.5mm 2mm;
+            font-size: 7px;
+            font-weight: 700;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+            color: #333;
+        }
+        .split-row {
+            display: flex;
+            flex: 1;
+            border-bottom: 0.5px solid #e0e0e0;
+            align-items: stretch;
+        }
+        .split-row:last-child { border-bottom: none; }
+        .split-row.half-split {
+            background: #fffde7;
+            border-bottom: 0.5px solid #e0e0e0;
+        }
+        .split-row.finish-split {
+            background: #000;
+            color: #fff;
+        }
+
+        .split-km {
+            width: 14mm;
+            min-width: 14mm;
+            padding: 1.5mm 2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid #ccc;
+            background: #f8f8f8;
+        }
+        .split-km .km-num {
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .split-km .km-label {
+            font-size: 6px;
+            color: #888;
+            margin-top: 0.5mm;
+        }
+        .split-row.half-split .split-km {
+            background: #fffde7;
+        }
+        .split-row.finish-split .split-km {
+            background: #000;
+            border-right: 1px solid #555;
+        }
+
+        .split-times {
+            flex: 1;
+            padding: 1.5mm 2mm;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .split-times .cum-time {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .split-times .pace-time {
+            font-size: 8px;
+            color: #666;
+        }
+        .split-row.half-split .split-times .pace-time,
+        .split-row.finish-split .split-times .pace-time {
+            color: rgba(255,255,255,0.5);
+        }
+        .split-row.finish-split .split-times .pace-time {
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* 最後一列：膠水區視覺標示 */
+        .glue-indicator {
+            width: 8mm;
+            min-width: 8mm;
+            background: repeating-linear-gradient(
+                45deg,
+                #f0f0f0,
+                #f0f0f0 1mm,
+                #e0e0e0 1mm,
+                #e0e0e0 2mm
+            );
+            border-left: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5px;
+            color: #bbb;
+            letter-spacing: 0.3px;
+            writing-mode: vertical-rl;
+            padding: 2mm 1mm;
+        }
+
+        /* ── LEGEND ── */
+        .legend {
+            margin-top: 10mm;
+            display: flex;
+            gap: 8mm;
+            flex-wrap: wrap;
+            font-size: 8px;
+            color: #666;
+            padding: 4mm;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .legend h4 {
+            font-size: 9px;
+            margin-bottom: 2mm;
+            color: #000;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+        .legend-dot {
+            width: 8mm;
+            height: 4mm;
+            border-radius: 1px;
+        }
+        .legend-dot.half { background: #fffde7; border: 1px solid #e0e0e0; }
+        .legend-dot.finish { background: #000; }
+
+        /* ── INSTRUCTIONS ── */
+        .instructions {
+            margin-top: 6mm;
+            padding: 4mm;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 8px;
+            color: #555;
+        }
+        .instructions h4 {
+            font-size: 9px;
+            color: #000;
+            margin-bottom: 2mm;
+        }
+        .instructions ol {
+            padding-left: 5mm;
+        }
+        .instructions li {
+            margin-bottom: 1.5mm;
+            line-height: 1.4;
+        }
+
         /* ── FULL 42K TABLE ── */
-        .full-table-section { margin-top: 24px; }
-        .full-table-section h3 { font-size: 13px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #000; }
-        .full-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        .full-table th, .full-table td { padding: 5px 6px; text-align: center; border: 1px solid #ccc; }
-        .full-table th { background: #f0f0f0; font-weight: 700; }
-        .full-table tr.half-row td { background: #fff8e1; }
-        .full-table tr.finish-row td { background: #1a1a2e; color: #fff; }
+        .full-table-section {
+            margin-top: 15mm;
+        }
+        .full-table-section h3 {
+            font-size: 11px;
+            margin-bottom: 4mm;
+            padding-bottom: 2mm;
+            border-bottom: 1.5px solid #000;
+        }
+        .full-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+        }
+        .full-table th, .full-table td {
+            padding: 2mm 3mm;
+            text-align: center;
+            border: 0.5px solid #ccc;
+        }
+        .full-table th {
+            background: #f0f0f0;
+            font-weight: 700;
+        }
+        .full-table tr.half-row td {
+            background: #fffde7;
+        }
+        .full-table tr.finish-row td {
+            background: #000;
+            color: #fff;
+        }
 
+        /* ── MARATHON INFO BAR ── */
+        .marathon-bar {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            padding: 3mm 4mm;
+            margin-bottom: 8mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            border-radius: 4px;
+        }
+        .marathon-bar .name { font-weight: 700; color: #000; }
+        .marathon-bar .gain { color: #666; }
+        .marathon-bar .difficulty { color: #000; font-weight: 700; }
+
+        /* ═══════════════════════════════════════
+           PRINT STYLES — A4 PAPER
+        ═══════════════════════════════════════ */
         @media print {
-            @page { margin: 8mm; size: 58mm 150mm portrait; }
+            @page {
+                margin: 10mm;
+                size: A4 portrait;
+            }
 
-            * { -webkit-print-color-adjust: none !important; print-color-adjust: none !important; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
 
-            body { padding: 0; background: #fff !important; color: #000 !important; font-family: 'JetBrains Mono', 'Noto Sans TC', monospace !important; }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                font-family: 'JetBrains Mono', 'Noto Sans TC', monospace !important;
+                padding: 0 !important;
+            }
 
             .print-controls,
             .legend,
-            .notes,
-            .qr-section,
-            .full-table-section { display: none !important; }
-
-            .print-workspace { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-
-            /* ── HEADER ── */
-            .bracelet-header {
-                background: #000 !important;
-                color: #fff !important;
-                padding: 8px 10px;
-                border-radius: 6px 6px 0 0;
-            }
-            .bracelet-header::before { display: none; }
-            .bracelet-header h1 { font-size: 1em !important; margin-bottom: 2px; }
-            .bracelet-header .meta { font-size: 0.7em !important; }
-
-            /* ── MARATHON INFO ── */
-            .marathon-info { background: #fff !important; border: 1px solid #000 !important; border-top: none !important; padding: 5px 10px; font-size: 10px; }
-            .marathon-info .name { font-weight: 900 !important; color: #000 !important; }
-            .marathon-info .difficulty { color: #000 !important; font-weight: 900 !important; }
-            .marathon-info .gain { color: #555 !important; }
-
-            /* ── STRATEGY BANNER ── */
-            .strategy-banner {
-                background: #000 !important;
-                color: #fff !important;
-                padding: 5px 10px;
-                font-size: 10px;
-                font-weight: 900;
+            .instructions,
+            .full-table-section,
+            .a4-preview::before {
+                display: none !important;
             }
 
-            /* ── BRACELET ROWS ── */
-            .bracelet-rows {
-                border: 2px solid #000 !important;
-                border-top: none !important;
-                border-radius: 0 0 6px 6px;
-                overflow: hidden;
-            }
-
-            .bracelet-row {
-                border-bottom: 1px solid #000 !important;
+            .a4-preview {
+                width: 100% !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 12mm 12mm !important;
+                box-shadow: none !important;
                 background: #fff !important;
-                font-size: 12px !important;
+                page-break-after: always;
+            }
+
+            /* ── BRACELET CARD ── */
+            .bracelet-card {
+                border: 0.5mm dashed #555 !important;
+                border-radius: 2mm !important;
+                margin-bottom: 10mm !important;
+                background: #fff !important;
                 page-break-inside: avoid;
             }
-            .bracelet-row.half,
-            .bracelet-row.checkpoint { background: #fff !important; }
-            .bracelet-row.finish { background: #000 !important; color: #fff !important; }
 
-            .km-label {
-                width: 72px !important;
-                padding: 7px 8px !important;
+            .cut-label {
+                font-size: 7px !important;
+                color: #aaa !important;
+                top: -6mm !important;
+            }
+
+            .glue-zone-label {
+                font-size: 6px !important;
+                color: #ccc !important;
+            }
+            .glue-zone-label.left { left: 1.5mm !important; }
+            .glue-zone-label.right { right: 1.5mm !important; }
+
+            /* ── BRACELET INNER ── */
+            .bracelet-inner {
+                height: 55mm !important;
+                border: 1px solid #000 !important;
+                border-radius: 2mm !important;
+            }
+            .bracelet-inner::after {
+                left: 50% !important;
+                width: 0.5px !important;
+                background: #bbb !important;
+            }
+
+            /* ── QR ZONE ── */
+            .qr-zone {
+                width: 20mm !important;
+                min-width: 20mm !important;
+                background: #000 !important;
+                padding: 2.5mm 1.5mm !important;
+            }
+            .qr-code {
+                width: 15mm !important;
+                height: 15mm !important;
+                font-size: 5px !important;
+            }
+            .qr-zone .scan-hint {
+                font-size: 5px !important;
+                color: #fff !important;
+                margin-top: 1.5mm !important;
+            }
+
+            /* ── HEADER ROW ── */
+            .bracelet-header-row {
+                background: #000 !important;
+                color: #fff !important;
+                padding: 2mm 3mm !important;
+            }
+            .bracelet-header-row .event-name {
+                font-size: 9px !important;
+                font-weight: 700 !important;
+            }
+            .bracelet-header-row .target-info {
+                font-size: 7px !important;
+                opacity: 0.8 !important;
+            }
+
+            /* ── STRATEGY ROW ── */
+            .strategy-row {
+                background: #000 !important;
+                color: #fff !important;
+                padding: 1mm 3mm !important;
+                font-size: 7px !important;
+                font-weight: 700 !important;
+            }
+
+            /* ── SPLITS AREA ── */
+            .splits-area {
+                flex: 1 !important;
+            }
+
+            .split-column .col-header {
+                background: #f0f0f0 !important;
+                padding: 1mm 2mm !important;
+                font-size: 6px !important;
+                border-bottom: 0.5px solid #ccc !important;
+            }
+
+            .split-row {
+                border-bottom: 0.3px solid #e0e0e0 !important;
+            }
+            .split-row.half-split {
+                background: #fffde7 !important;
+            }
+            .split-row.finish-split {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            .split-km {
+                width: 13mm !important;
+                min-width: 13mm !important;
+                padding: 1mm 2mm !important;
+                border-right: 1px solid #ccc !important;
+            }
+            .split-row.half-split .split-km {
+                background: #fffde7 !important;
+            }
+            .split-row.finish-split .split-km {
+                background: #000 !important;
+                border-right: 1px solid #555 !important;
+            }
+            .split-km .km-num {
+                font-size: 9px !important;
+                font-weight: 700 !important;
+            }
+            .split-km .km-label {
+                font-size: 5.5px !important;
+                color: #888 !important;
+            }
+
+            .split-times {
+                padding: 1mm 2mm !important;
+            }
+            .split-times .cum-time {
+                font-size: 10px !important;
+                font-weight: 700 !important;
+            }
+            .split-times .pace-time {
+                font-size: 7px !important;
+                color: #555 !important;
+            }
+            .split-row.half-split .split-times .pace-time,
+            .split-row.finish-split .split-times .pace-time {
+                color: rgba(255,255,255,0.5) !important;
+            }
+
+            .glue-indicator {
+                width: 7mm !important;
+                min-width: 7mm !important;
+                background: repeating-linear-gradient(
+                    45deg,
+                    #f0f0f0,
+                    #f0f0f0 0.5mm,
+                    #e0e0e0 0.5mm,
+                    #e0e0e0 1mm
+                ) !important;
+                border-left: 0.5px dashed #bbb !important;
+                font-size: 4px !important;
+            }
+
+            /* ── MARATHON BAR ── */
+            .marathon-bar {
                 background: #f5f5f5 !important;
-                border-right: 2px solid #000 !important;
-                font-size: 11px !important;
-                font-weight: 900 !important;
-                color: #000 !important;
+                border: 1px solid #ccc !important;
+                padding: 2.5mm 3.5mm !important;
+                margin-bottom: 7mm !important;
+                font-size: 8px !important;
             }
-            .bracelet-row.half .km-label {
-                background: #fff !important;
-                color: #000 !important;
-                font-weight: 900 !important;
-            }
-            .bracelet-row.finish .km-label { background: #000 !important; color: #fff !important; }
-            .km-label .sub { font-size: 9px !important; color: #555 !important; }
+            .marathon-bar .name { font-weight: 700 !important; }
+            .marathon-bar .gain { color: #555 !important; }
+            .marathon-bar .difficulty { color: #000 !important; font-weight: 700 !important; }
 
-            .time-display { padding: 7px 10px !important; }
-            .cumulative { font-weight: 900 !important; font-size: 1.2em !important; }
-            .pace-note { font-size: 10px !important; color: #555 !important; }
-            .bracelet-row.finish .pace-note { color: rgba(255,255,255,0.7) !important; }
+            /* ── LEGEND ── */
+            .legend {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="print-workspace">
-    <!-- Dynamically populated by JS -->
-    <div id="braceletContent"></div>
+<div class="print-controls">
+    <button class="print-btn" onclick="window.print()">⎙ 列印手環（A4）</button>
 </div>
 
-<div class="print-controls">
-    <button class="print-btn" onclick="window.print()">⎙ 列印手環</button>
+<!-- A4 Preview -->
+<div class="a4-preview">
+    <div class="marathon-bar">
+        <span class="name" id="marathonName">臺北馬拉松</span>
+        <span class="gain" id="marathonGain">爬升 120-150m</span>
+        <span class="difficulty" id="marathonDiff">★★☆☆☆</span>
+    </div>
+
+    <!-- 動態產生手環 -->
+    <div id="braceletContainer"></div>
+
+    <div class="legend">
+        <div>
+            <h4>圖例</h4>
+            <div class="legend-item"><div class="legend-dot half"></div>半程 21km</div>
+        </div>
+        <div>
+            <h4>折疊說明</h4>
+            <div class="legend-item">虛線 = 折疊線</div>
+        </div>
+        <div>
+            <h4>膠水區</h4>
+            <div class="legend-item">對折後邊緣塗膠水黏貼</div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h4>✂️ 如何製作手環</h4>
+        <ol>
+            <li>將此頁面列印在 A4 紙上</li>
+            <li>沿虛線邊界裁切（虛線外圍）</li>
+            <li>找到中央灰色虛線，對折後塗膠水</li>
+            <li>黏合後繞套在手腕上即可</li>
+        </ol>
+    </div>
 </div>
 
 <script>
 // Parse URL params
 const params = new URLSearchParams(window.location.search);
-
-// Default data (can be overridden by URL params)
-const DEFAULT_DATA = {
-    targetTime: '4:00:00',
-    avgPace: '5:41',
-    strategy: 'negative',
-    marathon: 'taipei',
-    rows: [
-        {km:1, label:'起點', cumulative:'0:00:00', pace:'5:41/km', type:''},
-        {km:5, label:'5km', cumulative:'0:28:25', pace:'5:41/km', type:'checkpoint'},
-        {km:10, label:'10km', cumulative:'0:56:50', pace:'5:41/km', type:'checkpoint'},
-        {km:15, label:'15km', cumulative:'1:25:15', pace:'5:41/km', type:'checkpoint'},
-        {km:21, label:'半程', cumulative:'1:59:31', pace:'5:41/km', type:'half'},
-        {km:25, label:'25km', cumulative:'2:22:35', pace:'5:41/km', type:'checkpoint'},
-        {km:30, label:'30km', cumulative:'2:50:30', pace:'5:41/km', type:'checkpoint'},
-        {km:35, label:'35km', cumulative:'3:18:25', pace:'5:41/km', type:'checkpoint'},
-        {km:40, label:'40km', cumulative:'3:46:20', pace:'5:41/km', type:'checkpoint'},
-        {km:42.195, label:'終點', cumulative:'4:00:00', pace:'5:41/km', type:'finish'}
-    ]
-};
 
 const MARATHON_NAMES = {
     taipei: { name: '臺北馬拉松', gain: '爬升 120-150m', diff: '★★☆☆☆' },
@@ -195,98 +654,155 @@ const MARATHON_NAMES = {
 
 const STRATEGY_NAMES = {
     even: '均速法',
-    negative: '負分段',
-    positive: '正分段',
+    negative: '負分段（前慢後快）',
+    positive: '正分段（前快後慢）',
     adversarial: '敵我配速',
     hrzone: '心率區間'
 };
 
-const STRATEGY_COLORS = {
-    even: '#666',
-    negative: '#ff6b35',
-    positive: '#e53935',
-    adversarial: '#1a237e',
-    hrzone: '#2e7d32'
-};
+// 全馬 42 段配速資料
+function buildPaceData(targetTime, avgPace) {
+    const paceParts = avgPace.split(':');
+    const paceSec = parseInt(paceParts[0]) * 60 + parseInt(paceParts[1] || 0);
 
-function buildBracelet() {
-    const marathonKey = params.get('marathon') || 'taipei';
-    const strategy = params.get('strategy') || 'negative';
-    const targetTime = params.get('target') || DEFAULT_DATA.targetTime;
-    const avgPace = params.get('pace') || DEFAULT_DATA.avgPace;
-    const marathon = MARATHON_NAMES[marathonKey] || MARATHON_NAMES.taipei;
-    const stratColor = STRATEGY_COLORS[strategy] || '#ff6b35';
-    const stratName = STRATEGY_NAMES[strategy] || '負分段';
-
-    let rowsHtml = '';
-    DEFAULT_DATA.rows.forEach(function(r) {
-        const typeClass = r.type ? ' ' + r.type : '';
-        rowsHtml += '<div class="bracelet-row' + typeClass + '">' +
-            '<div class="km-label">' + r.label + '<span class="sub">' + r.km + 'km</span></div>' +
-            '<div class="time-display">' +
-                '<span class="cumulative">' + r.cumulative + '</span>' +
-                '<span class="pace-note">' + r.pace + '</span>' +
-            '</div>' +
-        '</div>';
-    });
-
-    // Full 42k table
-    let fullTableHtml = '<div class="full-table-section"><h3>📋 完整分段表（42.195km）</h3><table class="full-table"><thead><tr><th>km</th><th>配速</th><th>累積</th><th>說明</th></tr></thead><tbody>';
-    const notes = {1:'起點',5:'檢查點',10:'檢查點',15:'檢查點',21:'半程',25:'檢查點',30:'突破點',35:'最後衝刺',40:'即將完賽',42.195:'完賽'};
-    const highlights = {21:'half-row', 42.195:'finish-row'};
+    const rows = [];
     for (let km = 1; km <= 42; km++) {
-        const note = notes[km] || (km % 5 === 0 ? '檢查點' : '');
-        const rowClass = highlights[km] || (km % 2 === 0 ? '' : '');
-        const paceMin = Math.floor(parseInt(avgPace.split(':')[0]));
-        const paceSec = parseInt(avgPace.split(':')[1]) || 0;
-        const totalSec = km * (paceMin * 60 + paceSec);
+        const totalSec = km * paceSec;
         const h = Math.floor(totalSec / 3600);
         const m = Math.floor((totalSec % 3600) / 60);
         const s = totalSec % 60;
-        const cumStr = h > 0 ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') : m + ':' + String(s).padStart(2,'0');
-        fullTableHtml += '<tr class="' + rowClass + '"><td>' + km + '</td><td>' + avgPace + '/km</td><td>' + cumStr + '</td><td>' + note + '</td></tr>';
+        const cumStr = h > 0 ? h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0') : m + ':' + String(s).padStart(2, '0');
+        rows.push({
+            km: km,
+            label: km === 42 ? '終點' : km + 'km',
+            cumulative: cumStr,
+            pace: avgPace + '/km',
+            type: km === 21 ? 'half' : (km === 42 ? 'finish' : '')
+        });
     }
-    fullTableHtml += '</tbody></table></div>';
+    return rows;
+}
 
-    document.getElementById('braceletContent').innerHTML = `
-        <div class="bracelet-header">
-            <h1>🏃 全馬配速手環</h1>
-            <div class="meta">目標 ${targetTime} · 平均 ${avgPace}/km</div>
+// 將 42 段分成左右兩欄
+function buildBraceletHTML(targetTime, avgPace, strategy, marathonKey) {
+    const marathon = MARATHON_NAMES[marathonKey] || MARATHON_NAMES.taipei;
+    const stratName = STRATEGY_NAMES[strategy] || '負分段（前慢後快）';
+    const allRows = buildPaceData(targetTime, avgPace);
+
+    // 分成左欄(1-21km)和右欄(22-42km)
+    const leftRows = allRows.slice(0, 21);
+    const rightRows = allRows.slice(21);
+
+    function buildSplitColumn(rows) {
+        let html = '';
+        rows.forEach(function(r) {
+            const typeClass = r.type ? ' ' + r.type + '-split' : '';
+            html += '<div class="split-row' + typeClass + '">' +
+                '<div class="split-km">' +
+                    '<span class="km-num">' + r.km + '</span>' +
+                    '<span class="km-label">' + r.label + '</span>' +
+                '</div>' +
+                '<div class="split-times">' +
+                    '<span class="cum-time">' + r.cumulative + '</span>' +
+                    '<span class="pace-time">' + r.pace + '</span>' +
+                '</div>' +
+            '</div>';
+        });
+        return html;
+    }
+
+    return `
+    <div class="bracelet-card">
+        <div class="cut-label">✂️ 請沿虛線剪下</div>
+        <div class="glue-zone-label left">膠水區</div>
+        <div class="glue-zone-label right">膠水區</div>
+
+        <div class="bracelet-inner">
+            <!-- QR 區 -->
+            <div class="qr-zone">
+                <div class="qr-code" id="qrCode">QR<br>掃描<br>開啟<br>網頁版</div>
+                <div class="scan-hint">掃描開啟手機版</div>
+            </div>
+
+            <!-- 手環內容 -->
+            <div class="bracelet-content">
+                <div class="bracelet-header-row">
+                    <span class="event-name">🏃 ${marathon.name} 配速手環</span>
+                    <span class="target-info">目標 ${targetTime} · ${avgPace}/km</span>
+                </div>
+                <div class="strategy-row">
+                    策略：${stratName}
+                </div>
+                <div class="splits-area">
+                    <div class="split-column">
+                        <div class="col-header">公里｜累計時間｜配速</div>
+                        ${buildSplitColumn(leftRows)}
+                    </div>
+                    <div class="split-column">
+                        <div class="col-header">公里｜累計時間｜配速</div>
+                        ${buildSplitColumn(rightRows)}
+                    </div>
+                    <div class="glue-indicator">對折<br>塗膠<br>黏合</div>
+                </div>
+            </div>
         </div>
-        <div class="marathon-info">
-            <span class="name">${marathon.name}</span>
-            <span class="gain">${marathon.gain}</span>
-            <span class="difficulty">${marathon.diff}</span>
-        </div>
-        <div class="strategy-banner" style="background: ${stratColor}">
-            策略：${stratName}
-        </div>
-        <div class="bracelet-rows">
-            ${rowsHtml}
-        </div>
-        <div class="legend">
-            <div class="legend-item"><div class="legend-dot half"></div>半程 21km</div>
-            <div class="legend-item"><div class="legend-dot checkpoint"></div>檢查點</div>
-            <div class="legend-item"><div class="legend-dot finish"></div>終點</div>
-        </div>
-        <div class="notes">
-            <h4>⚡ 配速提醒</h4>
-            <ul>
-                <li>前 5 公里：熱身期，刻意压慢，不要急於加速</li>
-                <li>10-30 公里：巡航期，保持穩定節奏</li>
-                <li>30-38 公里：維持配速，不要被其他跑者帶乱节奏</li>
-                <li>38-42 公里：全力衝刺，燃燒所有剩餘體力</li>
-            </ul>
-        </div>
-        <div class="qr-section">
-            <div class="qr-placeholder">QR</div>
-            掃描上方QR Code可開啟網頁版
-        </div>
-        ${fullTableHtml}
+    </div>
     `;
 }
 
-buildBracelet();
+// 產生 42 段完整表格
+function buildFullTable(avgPace) {
+    const paceParts = avgPace.split(':');
+    const paceSec = parseInt(paceParts[0]) * 60 + parseInt(paceParts[1] || 0);
+
+    let html = '<div class="full-table-section"><h3>📋 完整分段表（42.195km）</h3><table class="full-table"><thead><tr><th>km</th><th>配速</th><th>累積時間</th><th>備註</th></tr></thead><tbody>';
+    const notes = {
+        1: '起點', 5: '檢查點', 10: '檢查點', 15: '檢查點',
+        21: '半程', 25: '檢查點', 30: '突破點', 35: '最後衝刺',
+        40: '即將完賽', 42: '終點'
+    };
+    const highlights = { 21: 'half-row', 42: 'finish-row' };
+
+    for (let km = 1; km <= 42; km++) {
+        const note = notes[km] || '';
+        const rowClass = highlights[km] || '';
+        const totalSec = km * paceSec;
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const cumStr = h > 0 ? h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0') : m + ':' + String(s).padStart(2, '0');
+        html += '<tr class="' + rowClass + '"><td>' + km + '</td><td>' + avgPace + '/km</td><td>' + cumStr + '</td><td>' + note + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    return html;
+}
+
+function buildPage() {
+    const marathonKey = params.get('marathon') || 'taipei';
+    const strategy = params.get('strategy') || 'negative';
+    const targetTime = params.get('target') || '4:00:00';
+    const avgPace = params.get('pace') || '5:41';
+    const marathon = MARATHON_NAMES[marathonKey] || MARATHON_NAMES.taipei;
+
+    // 更新馬拉松資訊列
+    document.getElementById('marathonName').textContent = marathon.name;
+    document.getElementById('marathonGain').textContent = marathon.gain;
+    document.getElementById('marathonDiff').textContent = marathon.diff;
+
+    // 產生手環
+    const braceletHTML = buildBraceletHTML(targetTime, avgPace, strategy, marathonKey);
+    document.getElementById('braceletContainer').innerHTML = braceletHTML;
+
+    // 在 a4-preview 之後加入完整表格（列印時會隨列印範圍）
+    const tableHTML = buildFullTable(avgPace);
+    const a4preview = document.querySelector('.a4-preview');
+    a4preview.insertAdjacentHTML('beforeend', tableHTML);
+
+    // QR Code placeholder — 真實實現可用 qrcode.js
+    // 目前顯示文字提示
+}
+
+buildPage();
 </script>
 </body>
 </html>
