@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://marathon-pace-bracelet.vercel.app/sitemap.xml

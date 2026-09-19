@@ -1,0 +1,87 @@
+:root {
+  --bg: #0e0e10;
+  --fg: #fff;
+  --accent: #fc4c02;
+  --muted: #b8b8c0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'JetBrains Mono', 'Noto Sans TC', monospace;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 24px;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+header { margin-bottom: 32px; border-bottom: 1px solid #333; padding-bottom: 16px; }
+header h1 { color: var(--accent); font-size: 28px; margin-bottom: 8px; }
+header p { color: var(--muted); }
+
+main section { margin-bottom: 32px; }
+
+label { display: block; color: var(--accent); margin-bottom: 8px; font-weight: 600; margin-top: 12px; }
+label:first-of-type { margin-top: 0; }
+
+input[type=text], select {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px 16px;
+  background: #1a1a1d;
+  color: var(--fg);
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 12px;
+}
+button:hover { background: #e04400; }
+
+table {
+  width: 100%;
+  max-width: 480px;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: #1a1a1d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+th { background: var(--accent); color: #fff; font-weight: 700; }
+tr:last-child td { border-bottom: none; }
+
+footer {
+  margin-top: 48px;
+  padding-top: 16px;
+  border-top: 1px solid #333;
+  color: var(--muted);
+  font-size: 14px;
+}
+footer a { color: var(--accent); }
+
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  header, footer, button, input, select, label, h2 { display: none; }
+  table { max-width: 100%; background: #fff; color: #000; }
+  th { background: #000; color: #fff; }
+  td { border-bottom: 1px solid #000; }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="馬拉松配速手環 — 輸入目標時間,算每公里 split time,列印成 A4 紙手環">
+  <meta name="keywords" content="馬拉松,配速,pace band,A4,手環,marathon,pace">
+  <meta name="author" content="Sean">
+  <meta name="theme-color" content="#fc4c02">
+  <link rel="canonical" href="https://marathon-pace-bracelet.vercel.app/">
+  <link rel="icon" href="/og-image.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta property="og:title" content="馬拉松配速手環 — PaceBand">
+  <meta property="og:description" content="輸入目標時間,印出 A4 紙手環。比賽當天不用滑手機也能看到 split time。">
+  <meta property="og:image" content="/og-image.svg">
+  <title>馬拉松配速手環 — PaceBand</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <h1>🏃 馬拉松配速手環</h1>
+    <p>輸入目標時間 → 算每公里 split → 列印成 A4 紙手環。比賽當天戴手腕用。</p>
+  </header>
+
+  <main>
+    <section>
+      <label for="goal">目標時間 (HH:MM:SS)</label>
+      <input type="text" id="goal" placeholder="4:00:00" value="4:00:00">
+
+      <label for="distance">距離 (km)</label>
+      <select id="distance">
+        <option value="5">5 km</option>
+        <option value="10">10 km</option>
+        <option value="21">半馬 21 km</option>
+        <option value="42" selected>全馬 42 km</option>
+      </select>
+
+      <button onclick="generate()">產生配速表</button>
+    </section>
+
+    <section id="result" hidden>
+      <h2>每公里 Split Time</h2>
+      <table id="splits"></table>
+      <button onclick="window.print()">列印 A4 紙手環</button>
+      <p style="margin-top:12px;font-size:13px;color:var(--muted);">列印時選「無邊界」與「背景圖形」可保留黑色色塊</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>純前端 · 離線可用 (PWA) · Source: <a href="https://github.com/openclawsean024-create/marathon-pace-bracelet">GitHub</a> · 2026</p>
+  </footer>
+
+  <script>
+    function parseGoal(s) {
+      const parts = s.split(':').map(Number);
+      return parts.length === 3 && parts.every(n => !isNaN(n)) ? parts[0]*3600 + parts[1]*60 + parts[2] : 0;
+    }
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const sec = Math.floor(seconds % 60);
+      return h + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    }
+    function generate() {
+      const total = parseGoal(document.getElementById('goal').value);
+      if (!total) return alert('請輸入有效的 HH:MM:SS 格式');
+      const distance = parseInt(document.getElementById('distance').value);
+      const baseSplit = Math.floor(total / distance);
+      const remainder = total % distance;
+      let cumulative = 0;
+      const rows = [];
+      for (let i = 1; i <= distance; i++) {
+        const thisSplit = baseSplit + (i <= remainder ? 1 : 0);
+        cumulative += thisSplit;
+        rows.push({ km: i, split: formatTime(thisSplit), total: formatTime(cumulative) });
+      }
+      const tbl = document.getElementById('splits');
+      tbl.innerHTML = '<thead><tr><th>Km</th><th>Split</th><th>Total</th></tr></thead><tbody>' +
+        rows.map(r => '<tr><td>' + r.km + '</td><td>' + r.split + '</td><td>' + r.total + '</td></tr>').join('') +
+        '</tbody>';
+      document.getElementById('result').hidden = false;
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
